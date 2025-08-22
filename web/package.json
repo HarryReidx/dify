@@ -2,6 +2,7 @@
   "name": "dify-web",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.15.0",
   "engines": {
     "node": ">=v22.11.0"
   },
