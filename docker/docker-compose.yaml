@@ -578,11 +578,14 @@ x-shared-env: &shared-api-worker-env
   ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK: ${ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK:-false}
   ENABLE_DATASETS_QUEUE_MONITOR: ${ENABLE_DATASETS_QUEUE_MONITOR:-false}
   ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK: ${ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK:-true}
-
+name: ty-ai-flow
 services:
   # API service
   api:
-    image: langgenius/dify-api:1.8.1
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -601,6 +604,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    ports:
+      - "5001:5001"
+    pids_limit: -1
+    security_opt:
+      - seccomp=unconfined
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
@@ -611,7 +619,10 @@ services:
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: langgenius/dify-api:1.8.1
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -628,6 +639,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    pids_limit: -1
+    security_opt:
+      - seccomp=unconfined
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
@@ -638,7 +652,10 @@ services:
   # worker_beat service
   # Celery beat for scheduling periodic tasks.
   worker_beat:
-    image: langgenius/dify-api:1.8.1
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -650,14 +667,22 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    pids_limit: -1
+    security_opt:
+      - seccomp=unconfined
     networks:
       - ssrf_proxy_network
       - default
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:1.8.1
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-1.8.1
+    build:
+      context: ../web
+      dockerfile: Dockerfile
     restart: always
+    ports:
+      - '3000:3000'
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
       APP_API_URL: ${APP_API_URL:-}
@@ -747,6 +772,9 @@ services:
       HTTPS_PROXY: ${SANDBOX_HTTPS_PROXY:-http://ssrf_proxy:3128}
       SANDBOX_PORT: ${SANDBOX_PORT:-8194}
       PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
+    pids_limit: -1
+    security_opt:
+      - seccomp=unconfined
     volumes:
       - ./volumes/sandbox/dependencies:/dependencies
       - ./volumes/sandbox/conf:/conf
@@ -1340,17 +1368,139 @@ services:
     volumes:
       - ./volumes/unstructured:/app/data
 
+  ## function tool
+  ## 试卷生成工具
+  quiz-flask-service:
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.0
+    build: ./quiz-flask-service
+    container_name: quiz-flask-service
+    restart: always
+    environment:
+      # 配置服务的外部访问地址
+      # 根据你的实际部署环境调整这些值
+      QUIZ_SERVICE_HOST: ${QUIZ_SERVICE_HOST:-localhost}  # 改为你的服务器IP或域名
+      QUIZ_SERVICE_PORT: ${QUIZ_SERVICE_PORT:-5006}
+      QUIZ_SERVICE_PROTOCOL: ${QUIZ_SERVICE_PROTOCOL:-http}
+    volumes:
+      - ./quiz-flask-service/data:/app/data
+      - ./quiz-flask-service/markdown-quiz-files:/app/markdown-quiz-files
+    ports:
+      - 5006:5006
+    pids_limit: -1
+    security_opt:
+      - seccomp=unconfined
+
+
+  mineru-sglang-server:
+    image: mineru-sglang:latest
+    container_name: mineru-sglang-server
+    restart: always
+#    profiles: ["sglang-server"]
+    ports:
+      - 30000:30000
+    environment:
+      MINERU_MODEL_SOURCE: local
+    entrypoint: mineru-sglang-server
+    command:
+      --host 0.0.0.0
+      --port 30000
+      --mem-fraction-static 0.4
+      --tp-size 2
+      --dp-size 2
+      # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
+      # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
+      # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+    # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    ipc: host
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
+    networks:
+      - default
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "1"]
+              capabilities: [gpu]
+    # deploy:                              # GPU 资源配置
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all                 # 使用所有 GPU
+    #           capabilities: [gpu]
+
+  mineru-api:
+    image: mineru-sglang:latest
+    container_name: mineru-api
+    restart: always
+#    profiles: ["api"]
+    ports:
+      - 8000:8000
+    environment:
+      MINERU_MODEL_SOURCE: local
+    entrypoint: mineru-api
+    command:
+      --host 0.0.0.0
+      --port 8000
+      --mem-fraction-static 0.4
+      --tp-size 2
+      --dp-size 2
+      # parameters for sglang-engine
+      # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
+      # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
+      # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+    # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    ipc: host
+    networks:
+      - default
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "1"]
+              capabilities: [gpu]
+    # deploy:                              # API 不需要 GPU
+    #   resources:
+    #     reservations:
+    #       devices: []
+
+# ================================
+# 网络配置 (Network Configuration)
+# ================================
 networks:
-  # create a network between sandbox, api and ssrf_proxy, and can not access outside.
+  # SSRF 代理网络 - 内部隔离网络
+  # 功能：连接 sandbox、api 和 ssrf_proxy，无法访问外部网络
+  # 用途：安全隔离代码执行环境
   ssrf_proxy_network:
     driver: bridge
     internal: true
+
+  # Milvus 向量数据库网络
+  # 功能：Milvus 集群内部通信网络
   milvus:
     driver: bridge
+
+  # OpenSearch 网络 - 内部隔离网络
+  # 功能：OpenSearch 集群内部通信网络
   opensearch-net:
     driver: bridge
     internal: true
 
+# ================================
+# 数据卷配置 (Volume Configuration)
+# ================================
 volumes:
+  # Oracle 数据库数据卷
   oradata:
+
+  # Elasticsearch 数据卷
   dify_es01_data:
