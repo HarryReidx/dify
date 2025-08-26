@@ -33,14 +33,14 @@ describe('use default branding', () => {
       })
     })
   })
-  it('document title should be test-清云 if set title', () => {
+  it('document title should be test-清云·AI平台 if set title', () => {
     renderHook(() => useDocumentTitle('test'))
-    expect(document.title).toBe('test - 清云')
+    expect(document.title).toBe('test - 清云·AI平台')
   })
 
-  it('document title should be 清云 if not set title', () => {
+  it('document title should be 清云·AI平台 if not set title', () => {
     renderHook(() => useDocumentTitle(''))
-    expect(document.title).toBe('清云')
+    expect(document.title).toBe('清云·AI平台')
   })
 })
 
