@@ -51,6 +51,7 @@ const Apps = ({
     handleSearch()
   }
 
+  const [currentType, setCurrentType] = useState<string>('')
   const [currCategory, setCurrCategory] = useTabSearchParams({
     defaultTab: allCategoriesEn,
     disableSearchParams: false,
@@ -73,7 +74,28 @@ const Apps = ({
     },
   )
 
-  const filteredList = allList.filter(item => currCategory === allCategoriesEn || item.category === currCategory)
+  const filteredList = useMemo(() => {
+    if (currCategory === allCategoriesEn) {
+      if (!currentType)
+        return allList
+      else if (currentType === 'chatbot')
+        return allList.filter(item => (item.app.mode === 'chat' || item.app.mode === 'advanced-chat'))
+      else if (currentType === 'agent')
+        return allList.filter(item => (item.app.mode === 'agent-chat'))
+      else
+        return allList.filter(item => (item.app.mode === 'workflow'))
+    }
+    else {
+      if (!currentType)
+        return allList.filter(item => item.category === currCategory)
+      else if (currentType === 'chatbot')
+        return allList.filter(item => (item.app.mode === 'chat' || item.app.mode === 'advanced-chat') && item.category === currCategory)
+      else if (currentType === 'agent')
+        return allList.filter(item => (item.app.mode === 'agent-chat') && item.category === currCategory)
+      else
+        return allList.filter(item => (item.app.mode === 'workflow') && item.category === currCategory)
+    }
+  }, [currentType, currCategory, allCategoriesEn, allList])
 
   const searchFilteredList = useMemo(() => {
     if (!searchKeywords || !filteredList || filteredList.length === 0)

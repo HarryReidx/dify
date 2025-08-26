@@ -8,7 +8,6 @@ import Header from '@/app/components/header'
 import { EventEmitterContextProvider } from '@/context/event-emitter'
 import { ProviderContextProvider } from '@/context/provider-context'
 import { ModalContextProvider } from '@/context/modal-context'
-import GotoAnything from '@/app/components/goto-anything'
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -23,7 +22,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
                   <Header />
                 </HeaderWrapper>
                 {children}
-                <GotoAnything />
               </ModalContextProvider>
             </ProviderContextProvider>
           </EventEmitterContextProvider>

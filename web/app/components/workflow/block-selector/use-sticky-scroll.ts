@@ -23,7 +23,7 @@ const useStickyScroll = ({
       return
     const { height: wrapHeight, top: wrapTop } = wrapDom.getBoundingClientRect()
     const { top: nextToStickyTop } = stickyDOM.getBoundingClientRect()
-    let scrollPositionNew: ScrollPosition
+    let scrollPositionNew = ScrollPosition.belowTheWrap
 
     if (nextToStickyTop - wrapTop >= wrapHeight)
       scrollPositionNew = ScrollPosition.belowTheWrap

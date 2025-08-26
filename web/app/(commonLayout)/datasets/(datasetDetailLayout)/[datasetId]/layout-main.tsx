@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import useSWR from 'swr'
 import { useTranslation } from 'react-i18next'
+import { useBoolean } from 'ahooks'
 import {
   RiEqualizer2Fill,
   RiEqualizer2Line,
@@ -43,11 +44,16 @@ type IExtraInfoProps = {
 }
 
 const ExtraInfo = ({ isMobile, relatedApps, expand }: IExtraInfoProps) => {
+  const [isShowTips, { toggle: toggleTips, set: setShowTips }] = useBoolean(!isMobile)
   const { t } = useTranslation()
   const docLink = useDocLink()
 
   const hasRelatedApps = relatedApps?.data && relatedApps?.data?.length > 0
   const relatedAppsTotal = relatedApps?.data?.length || 0
+
+  useEffect(() => {
+    setShowTips(!isMobile)
+  }, [isMobile, setShowTips])
 
   return <div>
     {/* Related apps for desktop */}
@@ -103,14 +109,14 @@ const ExtraInfo = ({ isMobile, relatedApps, expand }: IExtraInfoProps) => {
               <RiApps2AddLine className='h-4 w-4 text-text-tertiary' />
             </div>
             <div className='my-2 text-xs text-text-tertiary'>{t('common.datasetMenus.emptyTip')}</div>
-            <a
-              className='mt-2 inline-flex cursor-pointer items-center text-xs text-text-accent'
-              href={docLink('/guides/knowledge-base/integrate-knowledge-within-application')}
-              target='_blank' rel='noopener noreferrer'
-            >
-              <RiBookOpenLine className='mr-1 text-text-accent' />
-              {t('common.datasetMenus.viewDoc')}
-            </a>
+            {/*<a*/}
+            {/*  className='mt-2 inline-flex cursor-pointer items-center text-xs text-text-accent'*/}
+            {/*  href={docLink('/guides/knowledge-base/integrate-knowledge-within-application')}*/}
+            {/*  target='_blank' rel='noopener noreferrer'*/}
+            {/*>*/}
+            {/*  <RiBookOpenLine className='mr-1 text-text-accent' />*/}
+            {/*  {t('common.datasetMenus.viewDoc')}*/}
+            {/*</a>*/}
           </div>
         }
       >

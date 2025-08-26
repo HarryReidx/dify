@@ -13,15 +13,20 @@ const headerEnvClassName: { [k: string]: string } = {
 const EnvNav = () => {
   const { t } = useTranslation()
   const { langGeniusVersionInfo } = useAppContext()
-  const showEnvTag = langGeniusVersionInfo.current_env === 'TESTING' || langGeniusVersionInfo.current_env === 'DEVELOPMENT'
+  // const showEnvTag = langGeniusVersionInfo.current_env === 'TESTING' || langGeniusVersionInfo.current_env === 'DEVELOPMENT'
+  const showEnvTag = true
 
   if (!showEnvTag)
     return null
 
   return (
-    <div className={`
+    // <div className={`
+    //   mr-1 flex h-[22px] items-center rounded-md border px-2 text-xs font-medium
+    //   ${headerEnvClassName[langGeniusVersionInfo.current_env]}
+    // `}>
+      <div className={`
       mr-1 flex h-[22px] items-center rounded-md border px-2 text-xs font-medium
-      ${headerEnvClassName[langGeniusVersionInfo.current_env]}
+      bg-[#FEC84B] border-[#FDB022] text-[#93370D]
     `}>
       {
         langGeniusVersionInfo.current_env === 'TESTING' && (
@@ -32,7 +37,8 @@ const EnvNav = () => {
         )
       }
       {
-        langGeniusVersionInfo.current_env === 'DEVELOPMENT' && (
+        // langGeniusVersionInfo.current_env === 'DEVELOPMENT' && (
+        true && (
           <>
             <TerminalSquare className='h-3 w-3' />
             <div className='ml-1 max-[1280px]:hidden'>{t('common.environment.development')}</div>

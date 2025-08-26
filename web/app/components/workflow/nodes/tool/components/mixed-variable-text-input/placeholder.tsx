@@ -31,8 +31,7 @@ const Placeholder = () => {
         <div className='system-kbd mx-0.5 flex h-4 w-4 items-center justify-center rounded bg-components-kbd-bg-gray text-text-placeholder'>/</div>
         <div
           className='system-sm-regular cursor-pointer text-components-input-text-placeholder underline decoration-dotted decoration-auto underline-offset-auto hover:text-text-tertiary'
-          onMouseDown={((e) => {
-            e.preventDefault()
+          onClick={((e) => {
             e.stopPropagation()
             handleInsert('/')
           })}

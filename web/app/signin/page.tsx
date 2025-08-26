@@ -1,7 +1,7 @@
 'use client'
 import { useSearchParams } from 'next/navigation'
-import OneMoreStep from './one-more-step'
-import NormalForm from './normal-form'
+import OneMoreStep from './oneMoreStep'
+import NormalForm from './normalForm'
 
 const SignIn = () => {
   const searchParams = useSearchParams()

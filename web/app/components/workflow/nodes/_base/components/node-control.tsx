@@ -11,6 +11,7 @@ import {
 import {
   useNodeDataUpdate,
   useNodesInteractions,
+  useNodesSyncDraft,
 } from '../../../hooks'
 import { type Node, NodeRunningStatus } from '../../../types'
 import { canRunBySingle } from '../../../utils'
@@ -29,6 +30,7 @@ const NodeControl: FC<NodeControlProps> = ({
   const [open, setOpen] = useState(false)
   const { handleNodeDataUpdate } = useNodeDataUpdate()
   const { handleNodeSelect } = useNodesInteractions()
+  const { handleSyncWorkflowDraft } = useNodesSyncDraft()
   const isSingleRunning = data._singleRunningStatus === NodeRunningStatus.Running
   const handleOpenChange = useCallback((newOpen: boolean) => {
     setOpen(newOpen)

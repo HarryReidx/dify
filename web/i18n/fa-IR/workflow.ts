@@ -114,8 +114,6 @@ const translation = {
     needAnswerNode: 'باید گره پاسخ اضافه شود',
     addBlock: 'نود اضافه کنید',
     tagBound: 'تعداد برنامه‌هایی که از این برچسب استفاده می‌کنند',
-    currentView: 'نمای فعلی',
-    currentWorkflow: 'گردش کار فعلی',
   },
   env: {
     envPanelTitle: 'متغیرهای محیطی',
@@ -991,10 +989,6 @@ const translation = {
       dependentsDescription: 'گره هایی که به این گره متکی هستند',
     },
     relationsTab: 'روابط',
-    copyLastRun: 'کپی آخرین اجرا',
-    noLastRunFound: 'هیچ اجرای قبلی یافت نشد',
-    noMatchingInputsFound: 'هیچ ورودی مطابقی از آخرین اجرا یافت نشد',
-    copyLastRunError: 'نتوانستم ورودی‌های آخرین اجرای را کپی کنم',
   },
 }
 

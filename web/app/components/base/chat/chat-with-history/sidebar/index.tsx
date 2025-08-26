@@ -145,7 +145,7 @@ const Sidebar = ({ isPanel }: Props) => {
             <div className={cn(
               'flex shrink-0 items-center gap-1.5 px-1',
             )}>
-              <div className='system-2xs-medium-uppercase text-text-tertiary'>{t('share.chat.poweredBy')}</div>
+              <div className='system-2xs-medium-uppercase text-gradient font-semibold '>{t('share.chat.poweredBy')} 武汉研发中心</div>
               {
                 systemFeatures.branding.enabled && systemFeatures.branding.workspace_logo
                   ? <img src={systemFeatures.branding.workspace_logo} alt='logo' className='block h-5 w-auto' />

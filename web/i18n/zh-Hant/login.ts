@@ -64,7 +64,7 @@ const translation = {
   joinTipStart: '邀請你加入',
   joinTipEnd: '團隊',
   invalid: '連結已失效',
-  explore: '探索 Dify',
+  explore: '探索·清云AI平台',
   activatedTipStart: '您已加入',
   activatedTipEnd: '團隊',
   activated: '現在登入',

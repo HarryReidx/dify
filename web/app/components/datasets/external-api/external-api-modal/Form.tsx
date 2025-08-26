@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RiBookOpenLine } from '@remixicon/react'
@@ -28,8 +28,10 @@ const Form: FC<FormProps> = React.memo(({
 }) => {
   const { t, i18n } = useTranslation()
   const docLink = useDocLink()
+  const [changeKey, setChangeKey] = useState('')
 
   const handleFormChange = (key: string, val: string) => {
+    setChangeKey(key)
     if (key === 'name') {
       onChange({ ...value, [key]: val })
     }

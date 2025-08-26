@@ -70,13 +70,10 @@ export const getFileExtension = (fileName: string, fileMimetype: string, isRemot
     }
   }
   if (!extension) {
-    if (extensions.size > 0) {
-      const firstExtension = extensions.values().next().value
-      extension = firstExtension ? firstExtension.toLowerCase() : ''
-    }
-    else {
+    if (extensions.size > 0)
+      extension = extensions.values().next().value.toLowerCase()
+    else
       extension = extensionInFileName
-    }
   }
 
   if (isRemote)
@@ -148,19 +145,6 @@ export const getProcessedFiles = (files: FileEntity[]) => {
 
 export const getProcessedFilesFromResponse = (files: FileResponse[]) => {
   return files.map((fileItem) => {
-    let supportFileType = fileItem.type
-
-    if (fileItem.filename && fileItem.mime_type) {
-      const detectedTypeFromFileName = getSupportFileType(fileItem.filename, '')
-      const detectedTypeFromMime = getSupportFileType('', fileItem.mime_type)
-
-      if (detectedTypeFromFileName
-          && detectedTypeFromMime
-          && detectedTypeFromFileName === detectedTypeFromMime
-          && detectedTypeFromFileName !== fileItem.type)
-        supportFileType = detectedTypeFromFileName
-    }
-
     return {
       id: fileItem.related_id,
       name: fileItem.filename,
@@ -168,7 +152,7 @@ export const getProcessedFilesFromResponse = (files: FileResponse[]) => {
       type: fileItem.mime_type,
       progress: 100,
       transferMethod: fileItem.transfer_method,
-      supportFileType,
+      supportFileType: fileItem.type,
       uploadedId: fileItem.upload_file_id || fileItem.related_id,
       url: fileItem.url || fileItem.remote_url,
     }

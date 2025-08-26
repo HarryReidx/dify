@@ -45,7 +45,7 @@ export const getPluginDetailLinkInMarketplace = (plugin: Plugin) => {
 }
 
 export const getMarketplacePluginsByCollectionId = async (collectionId: string, query?: CollectionsAndPluginsSearchParams) => {
-  let plugins: Plugin[]
+  let plugins = [] as Plugin[]
 
   try {
     const url = `${MARKETPLACE_API_PREFIX}/collections/${collectionId}/plugins`

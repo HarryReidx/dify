@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react'
 import { useGetState, useInfiniteScroll } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
+import produce from 'immer'
 import TypeIcon from '../type-icon'
 import Modal from '@/app/components/base/modal'
 import type { DataSet } from '@/models/datasets'
@@ -28,10 +29,9 @@ const SelectDataSet: FC<ISelectDataSetProps> = ({
   onSelect,
 }) => {
   const { t } = useTranslation()
-  const [selected, setSelected] = React.useState<DataSet[]>([])
+  const [selected, setSelected] = React.useState<DataSet[]>(selectedIds.map(id => ({ id }) as any))
   const [loaded, setLoaded] = React.useState(false)
   const [datasets, setDataSets] = React.useState<DataSet[] | null>(null)
-  const [hasInitialized, setHasInitialized] = React.useState(false)
   const hasNoData = !datasets || datasets?.length === 0
   const canSelectMulti = true
 
@@ -49,17 +49,19 @@ const SelectDataSet: FC<ISelectDataSetProps> = ({
         const newList = [...(datasets || []), ...data.filter(item => item.indexing_technique || item.provider === 'external')]
         setDataSets(newList)
         setLoaded(true)
+        if (!selected.find(item => !item.name))
+          return { list: [] }
 
-        // Initialize selected datasets based on selectedIds and available datasets
-        if (!hasInitialized) {
-          if (selectedIds.length > 0) {
-            const validSelectedDatasets = selectedIds
-              .map(id => newList.find(item => item.id === id))
-              .filter(Boolean) as DataSet[]
-            setSelected(validSelectedDatasets)
-          }
-          setHasInitialized(true)
-        }
+        const newSelected = produce(selected, (draft) => {
+          selected.forEach((item, index) => {
+            if (!item.name) { // not fetched database
+              const newItem = newList.find(i => i.id === item.id)
+              if (newItem)
+                draft[index] = newItem
+            }
+          })
+        })
+        setSelected(newSelected)
       }
       return { list: [] }
     },
