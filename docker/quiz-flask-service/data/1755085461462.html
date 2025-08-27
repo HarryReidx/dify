@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>清云考培</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f8fafc;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 900px;
+            overflow: visible;
+            min-height: auto;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-header .subtitle {
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .quiz-content {
+            padding: 2rem;
+        }
+
+        .question-card {
+            background: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-number {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .option-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            margin-bottom: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-color);
+            background: #f8faff;
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            margin-right: 0.8rem;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+
+        .option-item label {
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .quiz-actions {
+            background: var(--secondary-color);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            visibility: visible !important;
+            width: 100%;
+            clear: both;
+            margin-top: 2rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            order: 1;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            color: white !important;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(251, 146, 60, 0.2);
+            order: 2;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251, 146, 60, 0.4);
+            color: white !important;
+        }
+
+        .btn-quiz {
+            padding: 1rem 2.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            visibility: visible !important;
+            min-width: 150px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .score-card.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .score-card.danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+        }
+
+        .score-card.warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-text {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .question-correct {
+            border-color: var(--success-color) !important;
+            background: #f0fdf4 !important;
+        }
+
+        .question-incorrect {
+            border-color: var(--danger-color) !important;
+            background: #fef2f2 !important;
+        }
+
+        .question-partial {
+            border-color: var(--warning-color) !important;
+            background: #fffbeb !important;
+        }
+
+        /* 选项级别的反馈样式 */
+        .option-correct {
+            background: #dcfce7 !important;
+            border-color: var(--success-color) !important;
+            color: #166534 !important;
+        }
+
+        .option-incorrect {
+            background: #fee2e2 !important;
+            border-color: var(--danger-color) !important;
+            color: #991b1b !important;
+        }
+
+        .option-correct-highlight {
+            background: #bbf7d0 !important;
+            border-color: var(--success-color) !important;
+            color: #166534 !important;
+            font-weight: bold !important;
+        }
+
+        .option-missed {
+            background: #fef3c7 !important;
+            border-color: var(--warning-color) !important;
+            color: #92400e !important;
+        }
+
+        .option-correct::before {
+            content: "✓ ";
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .option-incorrect::before {
+            content: "✗ ";
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .option-missed::before {
+            content: "○ ";
+            color: var(--warning-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .correct-answer {
+            color: var(--success-color);
+            font-weight: 600;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* 移除默认的列表样式和行号 */
+        ol, ul {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            counter-reset: none !important;
+        }
+
+        ol li, ul li {
+            list-style: none !important;
+            counter-increment: none !important;
+        }
+
+        ol li::before, ul li::before {
+            content: none !important;
+        }
+
+        /* 隐藏可能的行号 */
+        .codehilite .linenos,
+        .highlight .linenos,
+        pre .linenos {
+            display: none !important;
+        }
+
+        /* 确保代码块不显示行号 */
+        pre, code {
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* 单选题和判断题样式统一 */
+        .radio-list {
+            background: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            list-style: none !important;
+        }
+
+        .radio-list:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 题目文本样式 */
+        .question-text-li {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-top: 0.5rem;
+            line-height: 1.6;
+            list-style: none !important;
+        }
+
+        /* 隐藏分割线 */
+        hr {
+            display: none !important;
+        }
+
+        /* 确保按钮区域在最顶层 */
+        .quiz-container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="quiz-container">
+        
+<div class="quiz-header">
+    <h1><i class="fas fa-graduation-cap"></i> 清云·考培在线（内测）</h1>
+    <div class="subtitle">请仔细阅读题目，选择正确答案</div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+</div>
+
+<div class="quiz-content">
+    <h1>废水处理危害识别分析及改进措施考卷</h1>
+<h2>一、单选题</h2>
+<div class="question-block radio-question" data-question-id="radio-question-1755085461456088-77281">
+            <div class="question-text">在废水处理场的危害识别分析中，以下哪项是主要目标？</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_34340" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_34340">A. 提高废水处理效率</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="0" data-content="1" id="radio_radio-question-1755085461456088-77281_1755085461456_21291" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_21291">B. 系统地识别所有可能影响健康、安全和环境的危害</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_53939" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_53939">C. 降低运营成本</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_17305" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_17305">D. 提高员工操作技能</label></li></ul>
+        </div>
+
+<div class="question-block radio-question" data-question-id="radio-question-1755085461456260-83700">
+            <div class="question-text">在废水处理过程中，以下哪项属于中等风险？</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_74228" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_74228">A. 鼓风机定期校准</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="0" data-content="1" id="radio_radio-question-1755085461456260-83700_1755085461456_57564" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_57564">B. 储渣池液位计故障失效</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_63387" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_63387">C. 生化处理系统中pH值正常</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_56035" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_56035">D. 放流水取样泵正常运行</label></li></ul>
+        </div>
+
+<h2>二、多选题</h2>
+<div class="question-block checklist-question">
+                <div class="question-text">在废水处理场的HAZID研究中，以下哪些系统被划分为分析节点？（可多选）</div>
+                <ul class="option-list checklist"><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456304_674758_688e464a" /><label for="checkbox_1755085461456304_674758_688e464a">A. 水处理</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456334_151519_53e418c9" /><label for="checkbox_1755085461456334_151519_53e418c9">B. 污泥处理</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456341_813147_93ab33d0" /><label for="checkbox_1755085461456341_813147_93ab33d0">C. 化学药剂</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456349_790191_3fa6f4c2" /><label for="checkbox_1755085461456349_790191_3fa6f4c2">D. 辅助系统</label></li></ul>
+            </div>
+
+<div class="question-block checklist-question">
+                <div class="question-text">在废水处理场的危害识别分析中，以下哪些风险水平被识别？（可多选）</div>
+                <ul class="option-list checklist"><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456353_626313_d4b7aaeb" /><label for="checkbox_1755085461456353_626313_d4b7aaeb">A. 中等风险</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456357_292334_1c853f9c" /><label for="checkbox_1755085461456357_292334_1c853f9c">B. 低风险</label></li><li class="option-item"><input type="checkbox" data-question="1" data-content="0" id="checkbox_1755085461456360_451149_53906fec" /><label for="checkbox_1755085461456360_451149_53906fec">C. 高风险</label></li><li class="option-item"><input type="checkbox" data-question="1" data-content="0" id="checkbox_1755085461456365_158665_cbf84230" /><label for="checkbox_1755085461456365_158665_cbf84230">D. 极高风险</label></li></ul>
+            </div>
+
+<h2>三、判断题</h2>
+<div class="question-block radio-question" data-question-id="radio-question-1755085461456285-69312">
+            <div class="question-text">在废水处理场的HAZID研究中，所有识别出的危害中不存在高风险危害。</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456285-69312" data-question="0" data-content="1" id="radio_radio-question-1755085461456285-69312_1755085461456_55812" /><label for="radio_radio-question-1755085461456285-69312_1755085461456_55812">正确</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456285-69312" data-question="1" data-content="0" id="radio_radio-question-1755085461456285-69312_1755085461456_22709" /><label for="radio_radio-question-1755085461456285-69312_1755085461456_22709">错误</label></li></ul>
+        </div>
+
+</div>
+
+<div id="score-display" class="score-card">
+    <div class="score-number" id="score-number">0%</div>
+    <div class="score-text">
+        <i class="fas fa-trophy"></i>
+        <span id="score-text">您的得分</span>
+    </div>
+    <div style="margin-top: 1rem; font-size: 1rem;">
+        <span id="correct-count">0</span> / <span id="total-count">0</span> 题正确
+    </div>
+</div>
+
+<div class="quiz-actions">
+    <button id="check-questions" class="btn btn-quiz btn-check">
+        <i class="fas fa-check-circle"></i> 提交答案
+    </button>
+    <button id="reset-questions" class="btn btn-quiz btn-reset">
+        <i class="fas fa-redo"></i> 重新开始
+    </button>
+</div>
+
+<script type="text/javascript">$(function(){
+    // 初始化题目
+    initializeQuestions();
+
+    // 更新进度条
+    updateProgress();
+
+    function initializeQuestions() {
+        var questionNumber = 1;
+
+        // 处理所有题目容器，按DOM顺序
+        $('.question-block').each(function() {
+            var $this = $(this);
+
+            // 添加必要的类
+            $this.addClass('question-card question-row');
+
+            // 添加题目编号
+            if (!$this.find('.question-number').length) {
+                $this.prepend('<div class="question-number">' + questionNumber + '</div>');
+                questionNumber++;
+            }
+
+            // 处理选项列表
+            var $optionList = $this.find('.option-list');
+            if ($optionList.length > 0) {
+                $optionList.find('li').each(function() {
+                    var $li = $(this);
+                    if (!$li.hasClass('option-item')) {
+                        $li.addClass('option-item');
+                    }
+
+                    var $input = $li.find('input');
+                    var $label = $li.find('label');
+
+                    if ($input.length > 0 && $label.length > 0) {
+                        // 确保label和input关联
+                        var inputId = $input.attr('id');
+                        if (!inputId) {
+                            inputId = 'option_' + Math.random().toString(36).substr(2, 9);
+                            $input.attr('id', inputId);
+                        }
+                        $label.attr('for', inputId);
+                    }
+                });
+
+                // 检测题目类型并设置相应的类
+                var hasRadio = $optionList.find('input[type="radio"]').length > 0;
+                var hasCheckbox = $optionList.find('input[type="checkbox"]').length > 0;
+                var hasText = $optionList.find('input[type="text"]').length > 0;
+
+                if (hasRadio) {
+                    $this.addClass('radio-list');
+                    // 确保单选题有正确的name属性
+                    var questionId = $this.data('question-id') || 'radio-question-' + questionNumber;
+                    $optionList.find('input[type="radio"]').attr('name', questionId);
+                } else if (hasCheckbox) {
+                    $this.addClass('checklist');
+                } else if (hasText) {
+                    $this.addClass('textbox');
+                    $optionList.find('input[type="text"]').addClass('text-input');
+                }
+            }
+        });
+
+        // 更新总题目数
+        var totalQuestions = $('.question-row').length;
+        $('#total-count').text(totalQuestions);
+    }
+
+    function updateProgress() {
+        var totalQuestions = $('.question-row').length;
+        var answeredQuestions = 0;
+
+        $('.question-row').each(function() {
+            var $this = $(this);
+            var hasAnswer = false;
+
+            if ($this.hasClass('radio-list')) {
+                hasAnswer = $this.find('input[type="radio"]:checked').length > 0;
+            } else if ($this.hasClass('checklist')) {
+                hasAnswer = $this.find('input[type="checkbox"]:checked').length > 0;
+            } else if ($this.hasClass('textbox')) {
+                hasAnswer = $this.find('input[type="text"]').val().trim() !== '';
+            }
+
+            if (hasAnswer) {
+                answeredQuestions++;
+            }
+        });
+
+        var progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+        $('#progress-fill').css('width', progress + '%');
+    }
+
+    function checkQuestion() {
+        resetQuestions(true);
+        var questions = $('.question-row');
+        var total_questions = questions.length;
+        var correct = 0;
+
+        questions.each(function(i, el) {
+            var $this = $(this);
+            var isCorrect = false;
+            var isPartial = false;
+
+            // 单选题（包括判断题）
+            if ($this.hasClass('radio-list') || $this.hasClass('radio-question')) {
+                var $correctOption = $this.find('input[type="radio"][data-content="1"]');
+                var $selectedOption = $this.find('input[type="radio"]:checked');
+
+                if ($selectedOption.length > 0 && $selectedOption.data('content') == '1') {
+                    correct += 1;
+                    isCorrect = true;
+                } else {
+                    // 标记错误选项
+                    if ($selectedOption.length > 0) {
+                        $selectedOption.closest('.option-item').addClass('option-incorrect');
+                    }
+                    // 显示正确答案
+                    $correctOption.closest('.option-item').addClass('option-correct-highlight');
+                }
+            }
+
+            // 文本题
+            else if ($this.hasClass('textbox')) {
+                var $textbox = $this.find('input[type="text"]');
+                var correct_text = String($textbox.data("content")).trim().split("").reverse().join("");
+                var user_answer = String($textbox.val()).trim();
+
+                if (user_answer.toLowerCase() == correct_text.toLowerCase()) {
+                    correct += 1;
+                    isCorrect = true;
+                    $textbox.closest('.option-item').addClass('option-correct');
+                } else {
+                    $textbox.closest('.option-item').addClass('option-incorrect');
+                    // 显示正确答案
+                    if (!$this.find('.correct-answer').length) {
+                        $this.append('<div class="correct-answer"><i class="fas fa-info-circle"></i> 正确答案: ' + correct_text + '</div>');
+                    }
+                }
+            }
+
+            // 多选题
+            else if ($this.hasClass('checklist')) {
+                var total_corrects = $this.find('input[type="checkbox"][data-content="1"]').length;
+                var total_incorrects = $this.find('input[type="checkbox"][data-content="0"]').length;
+                var correct_selected = $this.find('input[type="checkbox"][data-content="1"]:checked').length;
+                var incorrect_selected = $this.find('input[type="checkbox"][data-content="0"]:checked').length;
+
+                // 标记选项状态
+                $this.find('input[type="checkbox"]').each(function() {
+                    var $checkbox = $(this);
+                    var $optionItem = $checkbox.closest('.option-item');
+                    var isCorrectOption = $checkbox.data('content') == '1';
+                    var isSelected = $checkbox.is(':checked');
+
+                    if (isSelected) {
+                        if (isCorrectOption) {
+                            $optionItem.addClass('option-correct');
+                        } else {
+                            $optionItem.addClass('option-incorrect');
+                        }
+                    } else if (isCorrectOption) {
+                        $optionItem.addClass('option-missed');
+                    }
+                });
+
+                var qc = 0;
+                if (total_corrects > 0) {
+                    qc = (correct_selected / total_corrects) - (incorrect_selected / total_corrects);
+                    if (qc < 0) qc = 0;
+                }
+
+                correct += qc;
+
+                if (qc === 1) {
+                    isCorrect = true;
+                } else if (qc > 0) {
+                    isPartial = true;
+                }
+            }
+
+            // 添加题目级别的视觉反馈
+            if (isCorrect) {
+                $this.addClass('question-correct');
+            } else if (isPartial) {
+                $this.addClass('question-partial');
+            } else {
+                $this.addClass('question-incorrect');
+            }
+        });
+
+        showScore(correct, total_questions);
+    }
+
+    function showScore(correct, total) {
+        var score = Math.round((correct / total) * 100);
+        $('#score-number').text(score + '%');
+        $('#correct-count').text(correct);
+        $('#total-count').text(total);
+
+        // 根据分数设置样式
+        var scoreCard = $('#score-display');
+        scoreCard.removeClass('show danger warning');
+
+        if (score >= 80) {
+            scoreCard.addClass('show');
+            $('#score-text').html('<i class="fas fa-trophy"></i> 优秀！');
+        } else if (score >= 60) {
+            scoreCard.addClass('show warning');
+            $('#score-text').html('<i class="fas fa-medal"></i> 良好！');
+        } else {
+            scoreCard.addClass('show danger');
+            $('#score-text').html('<i class="fas fa-times-circle"></i> 需要努力！');
+        }
+
+        // 滚动到分数显示区域
+        $('html, body').animate({
+            scrollTop: scoreCard.offset().top - 100
+        }, 500);
+    }
+
+    function resetQuestions(keep) {
+        $('.question-row').removeClass('question-correct question-incorrect question-partial');
+        $('.option-item').removeClass('option-correct option-incorrect option-correct-highlight option-missed');
+        $('.correct-answer').remove();
+        $('#score-display').removeClass('show danger warning');
+        $('#progress-fill').css('width', '0%');
+
+        if (keep === true) {
+            return;
+        }
+
+        $('.question-row').find('input[type="text"]').val('');
+        $('.question-row').find('input[type="radio"], input[type="checkbox"]').prop('checked', false);
+        updateProgress();
+    }
+
+    function updateProgress() {
+        var totalQuestions = $('.question-row').length;
+        var answeredQuestions = 0;
+
+        $('.question-row').each(function() {
+            var $this = $(this);
+            var hasAnswer = false;
+
+            // 检查单选题和多选题
+            if ($this.find('input[type="radio"]:checked, input[type="checkbox"]:checked').length > 0) {
+                hasAnswer = true;
+            }
+
+            // 检查填空题
+            if ($this.find('input[type="text"]').filter(function() {
+                return $(this).val().trim() !== '';
+            }).length > 0) {
+                hasAnswer = true;
+            }
+
+            if (hasAnswer) {
+                answeredQuestions++;
+            }
+        });
+
+        var progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+        $('#progress-fill').css('width', progress + '%');
+    }
+
+    // 事件绑定
+    $('#check-questions').on('click', checkQuestion);
+    $('#reset-questions').on('click', resetQuestions);
+
+    // 监听输入变化以更新进度条
+    $(document).on('change', 'input[type="radio"], input[type="checkbox"]', updateProgress);
+    $(document).on('input', 'input[type="text"]', updateProgress);
+
+    // 点击选项项时也选中对应的input
+    $(document).on('click', '.option-item', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+            var $input = $(this).find('input');
+            if ($input.attr('type') === 'radio') {
+                $input.prop('checked', true);
+            } else if ($input.attr('type') === 'checkbox') {
+                $input.prop('checked', !$input.prop('checked'));
+            }
+            updateProgress();
+        }
+    });
+});</script>
+    </div>
+</body>
+</html>

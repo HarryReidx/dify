@@ -1,0 +1,23 @@
+identity:
+  name: save_quiz_and_get_url
+  author: Dify
+  label:
+    en_US: Save Quiz and Get URL
+    zh_Hans: 保存试卷并获取链接
+description:
+  human:
+    en_US: Save quiz content in markdown format and get a shareable URL
+    zh_Hans: 保存Markdown格式的试卷内容并获取可分享的链接
+  llm: Save quiz content in markdown format and return a shareable URL for the generated interactive quiz
+parameters:
+  - name: content
+    type: string
+    required: true
+    label:
+      en_US: Quiz Content
+      zh_Hans: 试卷内容
+    human_description:
+      en_US: The quiz content in markdown format
+      zh_Hans: Markdown格式的试卷内容
+    llm_description: The quiz content in markdown format that will be converted to an interactive HTML quiz
+    form: llm

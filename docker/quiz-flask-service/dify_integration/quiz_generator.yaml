@@ -1,0 +1,23 @@
+identity:
+  author: Dify
+  name: quiz_generator
+  label:
+    en_US: Quiz Generator
+    zh_Hans: 试卷生成器
+  description:
+    en_US: Generate interactive quizzes from markdown content
+    zh_Hans: 从Markdown内容生成交互式试卷
+  icon: quiz_generator.svg
+credentials_for_provider:
+  quiz_service_url:
+    type: text-input
+    required: true
+    label:
+      en_US: Quiz Service URL
+      zh_Hans: 试卷服务URL
+    placeholder:
+      en_US: http://127.0.0.1:5006
+      zh_Hans: http://127.0.0.1:5006
+    help:
+      en_US: The URL of the quiz generation service
+      zh_Hans: 试卷生成服务的URL地址

@@ -566,11 +566,18 @@ x-shared-env: &shared-api-worker-env
   ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK: ${ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK:-false}
   ENABLE_DATASETS_QUEUE_MONITOR: ${ENABLE_DATASETS_QUEUE_MONITOR:-false}
   ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK: ${ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK:-true}
-
-name: dify-tsingyun
+name: ty-ai-platform
 services:
-  # API service
+  # ================================
+  # 核心后端服务 (Core Backend Services)
+  # ================================
+
+  # API 服务 - 主要的后端工程
+  # 功能：提供所有的 REST API 接口，处理前端请求
+  # 类型：核心后端服务
+  # 重要性：★★★★★ (最重要的后端服务)
   api:
+#    image: langgenius/dify-api:1.7.2
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
     restart: always
     environment:
@@ -590,6 +597,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+    ports:
+      - "5001:5001"
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - D:\1-workspace\0-data\dify-tsingyun\volumes/app/storage:/app/api/storage
@@ -597,9 +606,12 @@ services:
       - ssrf_proxy_network
       - default
 
-  # worker service
-  # The Celery worker for processing the queue.
+  # Worker 服务 - 后端异步任务处理器
+  # 功能：使用 Celery 处理异步任务队列，如文档处理、AI 推理等
+  # 类型：核心后端服务
+  # 重要性：★★★★☆ (重要的后端组件)
   worker:
+#    image: langgenius/dify-api:1.7.2
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
     restart: always
     environment:
@@ -624,9 +636,12 @@ services:
       - ssrf_proxy_network
       - default
 
-  # worker_beat service
-  # Celery beat for scheduling periodic tasks.
+  # Worker Beat 服务 - 后端定时任务调度器
+  # 功能：使用 Celery Beat 调度定期任务，如数据清理、状态检查等
+  # 类型：核心后端服务
+  # 重要性：★★★☆☆ (定时任务调度)
   worker_beat:
+#    image: langgenius/dify-api:1.7.2
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
     restart: always
     environment:
@@ -643,9 +658,17 @@ services:
       - ssrf_proxy_network
       - default
 
-  # Frontend web application.
+  # ================================
+  # 前端服务 (Frontend Service)
+  # ================================
+
+  # Web 前端应用
+  # 功能：提供用户界面，包括管理控制台和应用界面
+  # 类型：前端服务
+  # 重要性：★★★★☆ (用户交互界面)
   web:
 #    image: langgenius/dify-web:1.7.2
+#    image: dify-web:ty-1.0
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-ty-1.0
     restart: always
     environment:
@@ -670,12 +693,18 @@ services:
       ENABLE_WEBSITE_JINAREADER: ${ENABLE_WEBSITE_JINAREADER:-true}
       ENABLE_WEBSITE_FIRECRAWL: ${ENABLE_WEBSITE_FIRECRAWL:-true}
       ENABLE_WEBSITE_WATERCRAWL: ${ENABLE_WEBSITE_WATERCRAWL:-true}
-  # The postgres database.
+  # ================================
+  # 基础设施服务 (Infrastructure Services)
+  # ================================
+
+  # PostgreSQL 数据库
+  # 功能：存储应用数据、用户信息、对话记录等
+  # 类型：基础设施服务
+  # 重要性：★★★★★ (核心数据存储)
   db:
+#    image: postgres:15-alpine
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:postgres-15-alpine
     restart: always
-    ports:
-      - ${POSTGRES_PORT:-5432}:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
@@ -695,8 +724,12 @@ services:
       timeout: 3s
       retries: 60
 
-  # The redis cache.
+  # Redis 缓存服务
+  # 功能：提供缓存、会话存储、消息队列等功能
+  # 类型：基础设施服务
+  # 重要性：★★★★☆ (缓存和队列)
   redis:
+#    image: redis:6-alpine
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:redis-6-alpine
     restart: always
     environment:
@@ -709,7 +742,10 @@ services:
     healthcheck:
       test: [ 'CMD', 'redis-cli', 'ping' ]
 
-  # The DifySandbox
+  # Dify 沙箱服务
+  # 功能：安全执行用户代码，提供隔离的代码运行环境
+  # 类型：基础设施服务
+  # 重要性：★★★☆☆ (代码执行安全)
   sandbox:
     image: langgenius/dify-sandbox:0.2.12
     restart: always
@@ -733,7 +769,10 @@ services:
     networks:
       - ssrf_proxy_network
 
-  # plugin daemon
+  # 插件守护进程 - 插件系统后端服务
+  # 功能：管理和执行插件，提供插件运行环境
+  # 类型：核心后端服务
+  # 重要性：★★★☆☆ (插件系统支持)
   plugin_daemon:
     image: langgenius/dify-plugin-daemon:0.2.0-local
     restart: always
@@ -792,9 +831,11 @@ services:
       db:
         condition: service_healthy
 
-  # ssrf_proxy server
-  # for more information, please refer to
-  # https://docs.dify.ai/learn-more/faq/install-faq#18-why-is-ssrf-proxy-needed%3F
+  # SSRF 代理服务
+  # 功能：防止服务器端请求伪造攻击，提供安全的网络请求代理
+  # 类型：安全基础设施服务
+  # 重要性：★★★☆☆ (网络安全)
+  # 更多信息：https://docs.dify.ai/learn-more/faq/install-faq#18-why-is-ssrf-proxy-needed%3F
   ssrf_proxy:
     image: ubuntu/squid:latest
     restart: always
@@ -813,8 +854,11 @@ services:
       - ssrf_proxy_network
       - default
 
-  # Certbot service
-  # use `docker-compose --profile certbot up` to start the certbot service.
+  # Certbot SSL 证书服务
+  # 功能：自动获取和更新 Let's Encrypt SSL 证书
+  # 类型：可选基础设施服务
+  # 重要性：★★☆☆☆ (HTTPS 证书管理)
+  # 使用方法：docker-compose --profile certbot up
   certbot:
     image: certbot/certbot
     profiles:
@@ -833,9 +877,12 @@ services:
     entrypoint: [ '/docker-entrypoint.sh' ]
     command: [ 'tail', '-f', '/dev/null' ]
 
-  # The nginx reverse proxy.
-  # used for reverse proxying the API service and Web service.
+  # Nginx 反向代理服务
+  # 功能：反向代理 API 和 Web 服务，负载均衡，SSL 终止
+  # 类型：基础设施服务
+  # 重要性：★★★★☆ (网关和代理)
   nginx:
+#    image: nginx:latest
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:nginx-latest
     restart: always
     volumes:
@@ -873,8 +920,17 @@ services:
       - '${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}'
       - '${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}'
 
-  # The Weaviate vector store.
+
+  # ================================
+  # 向量数据库服务 (Vector Database Services)
+  # ================================
+
+  # Weaviate 向量数据库
+  # 功能：存储和检索向量嵌入，支持语义搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   weaviate:
+#    image: semitechnologies/weaviate:1.19.0
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:weaviate-1.19.0
     profiles:
       - ''
@@ -897,8 +953,11 @@ services:
       AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
       AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
 
-  # Qdrant vector store.
-  # (if used, you need to set VECTOR_STORE to qdrant in the api & worker service.)
+  # Qdrant 向量数据库
+  # 功能：高性能向量相似性搜索引擎
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
+  # 注意：使用时需要在 api 和 worker 服务中设置 VECTOR_STORE=qdrant
   qdrant:
     image: langgenius/qdrant:v1.7.3
     profiles:
@@ -909,7 +968,10 @@ services:
     environment:
       QDRANT_API_KEY: ${QDRANT_API_KEY:-difyai123456}
 
-  # The Couchbase vector store.
+  # Couchbase 向量数据库
+  # 功能：NoSQL 文档数据库，支持向量搜索
+  # 类型：可选向量数据库
+  # 重要性：★★☆☆☆ (向量搜索)
   couchbase-server:
     build: ./couchbase-server
     profiles:
@@ -942,7 +1004,10 @@ services:
       start_period: 30s
       timeout: 10s
 
-  # The pgvector vector database.
+  # PGVector 向量数据库
+  # 功能：PostgreSQL 的向量扩展，支持向量相似性搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   pgvector:
     image: pgvector/pgvector:pg16
     profiles:
@@ -1015,7 +1080,10 @@ services:
       timeout: 3s
       retries: 30
 
-  # Chroma vector database
+  # Chroma 向量数据库
+  # 功能：开源向量数据库，专为 AI 应用设计
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   chroma:
     image: ghcr.io/chroma-core/chroma:0.5.20
     profiles:
@@ -1070,7 +1138,14 @@ services:
       ORACLE_PWD: ${ORACLE_PWD:-Dify123456}
       ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET:-AL32UTF8}
 
-  # Milvus vector database services
+  # ================================
+  # Milvus 向量数据库集群服务
+  # ================================
+
+  # Milvus 依赖：etcd 服务发现
+  # 功能：为 Milvus 提供服务发现和配置管理
+  # 类型：Milvus 依赖服务
+  # 重要性：★★☆☆☆ (Milvus 组件)
   etcd:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.5
@@ -1092,8 +1167,13 @@ services:
     networks:
       - milvus
 
+  # Milvus 依赖：MinIO 对象存储
+  # 功能：为 Milvus 提供对象存储服务
+  # 类型：Milvus 依赖服务
+  # 重要性：★★☆☆☆ (Milvus 组件)
   minio:
     container_name: milvus-minio
+#    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:minio-RELEASE.2025-06-13T11-33-47Z
     profiles:
       - milvus
@@ -1111,6 +1191,10 @@ services:
     networks:
       - milvus
 
+  # Milvus 向量数据库主服务
+  # 功能：高性能向量数据库，支持大规模向量搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   milvus-standalone:
     container_name: milvus-standalone
     image: milvusdb/milvus:v2.5.15
@@ -1138,7 +1222,14 @@ services:
     networks:
       - milvus
 
-  # Opensearch vector database
+  # ================================
+  # OpenSearch 搜索引擎服务
+  # ================================
+
+  # OpenSearch 搜索引擎
+  # 功能：全文搜索和向量搜索引擎
+  # 类型：可选搜索引擎
+  # 重要性：★★★☆☆ (搜索引擎)
   opensearch:
     container_name: opensearch
     image: opensearchproject/opensearch:latest
@@ -1161,6 +1252,10 @@ services:
     networks:
       - opensearch-net
 
+  # OpenSearch 仪表板
+  # 功能：OpenSearch 的可视化管理界面
+  # 类型：可选管理工具
+  # 重要性：★★☆☆☆ (管理界面)
   opensearch-dashboards:
     container_name: opensearch-dashboards
     image: opensearchproject/opensearch-dashboards:latest
@@ -1224,8 +1319,15 @@ services:
     ports:
       - ${MATRIXONE_PORT:-6001}:${MATRIXONE_PORT:-6001}
 
-  # https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
-  # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites
+  # ================================
+  # Elasticsearch 搜索引擎服务
+  # ================================
+
+  # Elasticsearch 搜索引擎
+  # 功能：全文搜索和分析引擎，支持向量搜索
+  # 类型：可选搜索引擎
+  # 重要性：★★★☆☆ (搜索引擎)
+  # 文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
     container_name: elasticsearch
@@ -1259,8 +1361,11 @@ services:
       timeout: 10s
       retries: 50
 
-  # https://www.elastic.co/guide/en/kibana/current/docker.html
-  # https://www.elastic.co/guide/en/kibana/current/settings.html
+  # Kibana 可视化工具
+  # 功能：Elasticsearch 的数据可视化和管理界面
+  # 类型：可选管理工具
+  # 重要性：★★☆☆☆ (数据可视化)
+  # 文档：https://www.elastic.co/guide/en/kibana/current/
   kibana:
     image: docker.elastic.co/kibana/kibana:8.14.3
     container_name: kibana
@@ -1287,8 +1392,15 @@ services:
       timeout: 10s
       retries: 3
 
-  # unstructured .
-  # (if used, you need to set ETL_TYPE to Unstructured in the api & worker service.)
+  # ================================
+  # 文档处理服务 (Document Processing Services)
+  # ================================
+
+  # Unstructured 文档处理服务
+  # 功能：处理非结构化文档，提取文本和元数据
+  # 类型：可选文档处理服务
+  # 重要性：★★☆☆☆ (文档处理)
+  # 注意：使用时需要在 api 和 worker 服务中设置 ETL_TYPE=Unstructured
   unstructured:
     image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
     profiles:
@@ -1297,17 +1409,47 @@ services:
     volumes:
       - D:\1-workspace\0-data\dify-tsingyun\volumes/unstructured:/app/data
 
+
+## function tool
+  ## 试卷生成工具
+  quiz-flask-service:
+    build: ./quiz-flask-service
+    container_name: quiz-flask-service
+    restart: always
+    volumes:
+      - ./quiz-flask-service/data:/app/data
+    ports:
+      - 5006:5006
+
+
+# ================================
+# 网络配置 (Network Configuration)
+# ================================
 networks:
-  # create a network between sandbox, api and ssrf_proxy, and can not access outside.
+  # SSRF 代理网络 - 内部隔离网络
+  # 功能：连接 sandbox、api 和 ssrf_proxy，无法访问外部网络
+  # 用途：安全隔离代码执行环境
   ssrf_proxy_network:
     driver: bridge
     internal: true
+
+  # Milvus 向量数据库网络
+  # 功能：Milvus 集群内部通信网络
   milvus:
     driver: bridge
+
+  # OpenSearch 网络 - 内部隔离网络
+  # 功能：OpenSearch 集群内部通信网络
   opensearch-net:
     driver: bridge
     internal: true
 
+# ================================
+# 数据卷配置 (Volume Configuration)
+# ================================
 volumes:
+  # Oracle 数据库数据卷
   oradata:
+
+  # Elasticsearch 数据卷
   dify_es01_data:
