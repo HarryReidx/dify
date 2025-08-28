@@ -2,7 +2,7 @@
 
 ## 🚀 快速开始
 
-### 方式一：独立使用Flask服务
+### 独立使用Flask服务
 
 ```bash
 # 安装依赖
@@ -12,17 +12,56 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### 方式二：集成到Dify（推荐）
+详细集成说明请查看：[DIFY_INTEGRATION.md](DIFY_INTEGRATION.md)
 
-```bash
-# 一键安装到Dify
-python install_to_dify.py
+## 🔧 配置外部访问地址
 
-# 或手动指定Dify路径
-python install_to_dify.py /path/to/dify
+### Docker Compose 部署时的重要配置
+
+当通过 Docker Compose 部署时，为了确保生成的试卷链接能在浏览器端正常访问，需要正确配置服务的外部访问地址：
+
+#### 方法一：环境变量配置（推荐）
+
+在 `docker-compose.yaml` 中设置环境变量：
+
+```yaml
+quiz-flask-service:
+  environment:
+    QUIZ_SERVICE_HOST: localhost  # 改为你的服务器IP或域名
+    QUIZ_SERVICE_PORT: 5006
+    QUIZ_SERVICE_PROTOCOL: http
 ```
 
-详细集成说明请查看：[DIFY_INTEGRATION.md](DIFY_INTEGRATION.md)
+#### 方法二：使用 .env 文件
+
+创建 `.env` 文件：
+
+```bash
+# 本地开发环境
+QUIZ_SERVICE_HOST=localhost
+
+# 生产环境示例
+# QUIZ_SERVICE_HOST=yourdomain.com
+# QUIZ_SERVICE_HOST=192.168.1.100
+
+QUIZ_SERVICE_PORT=5006
+QUIZ_SERVICE_PROTOCOL=http
+```
+
+#### 配置说明：
+
+- **本地开发**: `QUIZ_SERVICE_HOST=localhost`
+- **局域网访问**: `QUIZ_SERVICE_HOST=192.168.1.100` (你的服务器IP)
+- **公网访问**: `QUIZ_SERVICE_HOST=yourdomain.com` (你的域名)
+
+### 重启服务
+
+配置修改后，重启服务使配置生效：
+
+```bash
+docker-compose down
+docker-compose up -d quiz-flask-service
+```
 
 ---
 

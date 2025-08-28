@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  quiz-flask-service:
+    build:
+      context: ./quiz-flask-service
+      dockerfile: Dockerfile
+    container_name: quiz-flask-service
+    restart: always
+    ports:
+      - "5006:5006"
+    environment:
+      # 配置服务的外部访问地址
+      # 这里需要根据你的实际部署环境进行调整
+      QUIZ_SERVICE_HOST: ${QUIZ_SERVICE_HOST:-localhost}  # 改为你的服务器IP或域名
+      QUIZ_SERVICE_PORT: ${QUIZ_SERVICE_PORT:-5006}
+      QUIZ_SERVICE_PROTOCOL: ${QUIZ_SERVICE_PROTOCOL:-http}
+    volumes:
+      # 持久化存储生成的试卷文件
+      - ./quiz-flask-service/data:/app/data
+      - ./quiz-flask-service/markdown-quiz-files:/app/markdown-quiz-files
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: docker_default  # 连接到主要的dify网络

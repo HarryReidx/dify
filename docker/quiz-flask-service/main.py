@@ -240,6 +240,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
+# 配置服务器地址和端口
+# 从环境变量获取，如果没有设置则使用默认值
+QUIZ_SERVICE_HOST = os.environ.get('QUIZ_SERVICE_HOST', '127.0.0.1')
+QUIZ_SERVICE_PORT = os.environ.get('QUIZ_SERVICE_PORT', '5006')
+QUIZ_SERVICE_PROTOCOL = os.environ.get('QUIZ_SERVICE_PROTOCOL', 'http')
+
 # 确保文件夹存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -298,10 +304,13 @@ def upload_markdown():
                 logger.error(f"File write error: {e}")
                 return jsonify({"error": f"File write failed: {str(e)}"}), 500
 
+        # 构建可访问的URL
+        quiz_url = f"{QUIZ_SERVICE_PROTOCOL}://{QUIZ_SERVICE_HOST}:{QUIZ_SERVICE_PORT}/get_html/{filename}"
+
         return jsonify({
-            "message": f"保存成功\n查看链接http://127.0.0.1:5006/get_html/{filename}",
+            "message": f"保存成功\n查看链接{quiz_url}",
             "filename": filename,
-            "url": f"http://127.0.0.1:5006/get_html/{filename}"
+            "url": quiz_url
         }), 200
 
     except Exception as e:
