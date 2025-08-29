@@ -15,7 +15,7 @@ export default function useDocumentTitle(title: string) {
       favicon = systemFeatures.branding.favicon
     }
     else {
-      titleStr = `${prefix}清云·AI平台`
+      titleStr = `${prefix}清云·清云 · AiFlow`
       favicon = `${basePath}/favicon.ico`
     }
   }

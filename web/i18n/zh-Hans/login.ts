@@ -71,7 +71,7 @@ const translation = {
   joinTipStart: '邀请你加入 ',
   joinTipEnd: ' 团队',
   invalid: '链接已失效',
-  explore: '探索·清云AI平台',
+  explore: '探索·清云清云 · AiFlow',
   activatedTipStart: '您已加入',
   activatedTipEnd: '团队',
   activated: '现在登录',
