@@ -352,6 +352,8 @@ x-shared-env: &shared-api-worker-env
   API_SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
   API_SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
   WEB_SENTRY_DSN: ${WEB_SENTRY_DSN:-}
+  PLUGIN_SENTRY_ENABLED: ${PLUGIN_SENTRY_ENABLED:-false}
+  PLUGIN_SENTRY_DSN: ${PLUGIN_SENTRY_DSN:-}
   NOTION_INTEGRATION_TYPE: ${NOTION_INTEGRATION_TYPE:-public}
   NOTION_CLIENT_SECRET: ${NOTION_CLIENT_SECRET:-}
   NOTION_CLIENT_ID: ${NOTION_CLIENT_ID:-}
@@ -587,8 +589,11 @@ services:
   # 类型：核心后端服务
   # 重要性：★★★★★ (最重要的后端服务)
   api:
-    #    image: langgenius/dify-api:1.7.2
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
+#    image: langgenius/dify-api:1.8.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -624,8 +629,11 @@ services:
   # 类型：核心后端服务
   # 重要性：★★★★☆ (重要的后端组件)
   worker:
-    #    image: langgenius/dify-api:1.7.2
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
+#    image: langgenius/dify-api:1.8.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -657,8 +665,11 @@ services:
   # 类型：核心后端服务
   # 重要性：★★★☆☆ (定时任务调度)
   worker_beat:
-    #    image: langgenius/dify-api:1.7.2
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.7.2
+#    image: langgenius/dify-api:1.8.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
+    build:
+      context: ../api
+      dockerfile: Dockerfile
     restart: always
     environment:
       # Use the shared environment variables.
@@ -686,9 +697,11 @@ services:
   # 类型：前端服务
   # 重要性：★★★★☆ (用户交互界面)
   web:
-    #    image: langgenius/dify-web:1.7.2
-    #    image: dify-web:ty-1.0
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-ty-1.0
+#    image: langgenius/dify-web:1.8.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-1.8.0
+    build:
+      context: ../web
+      dockerfile: Dockerfile
     restart: always
     ports:
       - '3000:3000'
@@ -723,8 +736,8 @@ services:
   # 类型：基础设施服务
   # 重要性：★★★★★ (核心数据存储)
   db:
-    #    image: postgres:15-alpine
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:postgres-15-alpine
+#    image: postgres:15-alpine
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:postgres-15-alpine-1.8.0
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -750,8 +763,8 @@ services:
   # 类型：基础设施服务
   # 重要性：★★★★☆ (缓存和队列)
   redis:
-    #    image: redis:6-alpine
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:redis-6-alpine
+#    image: redis:6-alpine
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:redis-6-alpine-1.8.0
     restart: always
     environment:
       REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
@@ -761,7 +774,7 @@ services:
     # Set the redis password when startup redis server.
     command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456}
     healthcheck:
-      test: [ 'CMD', 'redis-cli', 'ping' ]
+      test: [ 'CMD-SHELL', 'redis-cli -a ${REDIS_PASSWORD:-difyai123456} ping | grep -q PONG' ]
 
   # Dify 沙箱服务
   # 功能：安全执行用户代码，提供隔离的代码运行环境
@@ -847,6 +860,8 @@ services:
       VOLCENGINE_TOS_ACCESS_KEY: ${PLUGIN_VOLCENGINE_TOS_ACCESS_KEY:-}
       VOLCENGINE_TOS_SECRET_KEY: ${PLUGIN_VOLCENGINE_TOS_SECRET_KEY:-}
       VOLCENGINE_TOS_REGION: ${PLUGIN_VOLCENGINE_TOS_REGION:-}
+      SENTRY_ENABLED: ${PLUGIN_SENTRY_ENABLED:-false}
+      SENTRY_DSN: ${PLUGIN_SENTRY_DSN:-}
     ports:
       - "${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
     volumes:
@@ -906,8 +921,8 @@ services:
   # 类型：基础设施服务
   # 重要性：★★★★☆ (网关和代理)
   nginx:
-    #    image: nginx:latest
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:nginx-latest
+#    image: nginx:latest
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:nginx-latest-1.8.0
     restart: always
     volumes:
       - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
@@ -954,8 +969,8 @@ services:
   # 类型：可选向量数据库
   # 重要性：★★★☆☆ (向量搜索)
   weaviate:
-    #    image: semitechnologies/weaviate:1.19.0
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:weaviate-1.19.0
+#    image: semitechnologies/weaviate:1.19.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:weaviate-1.19.0-1.8.0
     profiles:
       - ''
       - weaviate
@@ -1197,8 +1212,8 @@ services:
   # 重要性：★★☆☆☆ (Milvus 组件)
   minio:
     container_name: milvus-minio
-    #    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:minio-RELEASE.2025-06-13T11-33-47Z
+#    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:minio-RELEASE.2025-06-13T11-33-47Z-1.8.0
     profiles:
       - milvus
     environment:
@@ -1437,8 +1452,8 @@ services:
   ## function tool
   ## 试卷生成工具
   quiz-flask-service:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.0
-#    build: ./quiz-flask-service
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.0
+    build: ./quiz-flask-service
     container_name: quiz-flask-service
     restart: always
     environment:

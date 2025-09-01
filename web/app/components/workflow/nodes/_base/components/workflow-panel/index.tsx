@@ -419,9 +419,8 @@ const BasePanel: FC<BasePanelProps> = ({
           }
           <Split />
         </div>
-
         {tabType === TabType.settings && (
-          <>
+          <div className='flex-1 overflow-y-auto'>
             <div>
               {cloneElement(children as any, {
                 id,
@@ -466,7 +465,7 @@ const BasePanel: FC<BasePanelProps> = ({
                 </div>
               )
             }
-          </>
+          </div>
         )}
 
         {tabType === TabType.lastRun && (
@@ -478,7 +477,7 @@ const BasePanel: FC<BasePanelProps> = ({
             isRunAfterSingleRun={isRunAfterSingleRun}
             updateNodeRunningStatus={updateNodeRunningStatus}
             onSingleRunClicked={handleSingleRun}
-            nodeInfo={nodeInfo}
+            nodeInfo={nodeInfo!}
             singleRunResult={runResult!}
             isPaused={isPaused}
             {...passedLogParams}

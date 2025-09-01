@@ -238,6 +238,7 @@ const ParameterItem: FC<ParameterItemProps> = ({
             onChange={handleTagChange}
             customizedConfirmKey='Tab'
             isInWorkflow={isInWorkflow}
+            required={parameterRule.required}
           />
         </div>
       )
