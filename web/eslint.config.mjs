@@ -119,8 +119,8 @@ export default combine(
       ],
 
       // antfu migrate to eslint-plugin-unused-imports
-      'unused-imports/no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'off',
+      'unused-imports/no-unused-vars': 'warn',
+      'unused-imports/no-unused-imports': 'warn',
 
       // We use `import { noop } from 'lodash-es'` across `web` project
       'no-empty-function': 'error',
@@ -151,7 +151,7 @@ export default combine(
       // code complexity
       'sonarjs/cognitive-complexity': 'off',
       'sonarjs/no-nested-functions': 'warn',
-      'sonarjs/no-nested-conditional': 'off',
+      'sonarjs/no-nested-conditional': 'warn',
       'sonarjs/nested-control-flow': 'warn', // 3 levels of nesting
       'sonarjs/no-small-switch': 'off',
       'sonarjs/no-nested-template-literals': 'warn',
@@ -159,14 +159,14 @@ export default combine(
       'sonarjs/regex-complexity': 'warn',
       // maintainability
       'sonarjs/no-ignored-exceptions': 'off',
-      'sonarjs/no-commented-code': 'off',
-      'sonarjs/no-unused-vars': 'off',
+      'sonarjs/no-commented-code': 'warn',
+      'sonarjs/no-unused-vars': 'warn',
       'sonarjs/prefer-single-boolean-return': 'warn',
       'sonarjs/duplicates-in-character-class': 'off',
       'sonarjs/single-char-in-character-classes': 'off',
       'sonarjs/anchor-precedence': 'warn',
       'sonarjs/updated-loop-counter': 'off',
-      'sonarjs/no-dead-store': 'off',
+      'sonarjs/no-dead-store': 'error',
       'sonarjs/no-duplicated-branches': 'warn',
       'sonarjs/max-lines': 'warn', // max 1000 lines
       'sonarjs/no-variable-usage-before-declaration': 'error',
@@ -193,14 +193,17 @@ export default combine(
       'node/prefer-global/process': 'off',
       'node/prefer-global/buffer': 'off',
       'node/no-callback-literal': 'off',
+      'eslint-comments/no-unused-disable': 'off',
+      'tailwindcss/no-arbitrary-value': 'off',
+      'tailwindcss/classnames-order': 'off',
+      'style/indent': ['error', 2, {
+        SwitchCase: 1,
+        ignoreComments: true,
 
+      }],
       // useful, but big change
       'unicorn/prefer-number-properties': 'warn',
       'unicorn/no-new-array': 'warn',
-      'style/indent': 'off',
-
-      // disable redundant boolean rule that causes errors
-      'sonarjs/no-redundant-boolean': 'off',
     },
   },
   // suppress error for `no-undef` rule
