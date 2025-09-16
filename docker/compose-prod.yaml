@@ -578,14 +578,19 @@ x-shared-env: &shared-api-worker-env
   ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK: ${ENABLE_MAIL_CLEAN_DOCUMENT_NOTIFY_TASK:-false}
   ENABLE_DATASETS_QUEUE_MONITOR: ${ENABLE_DATASETS_QUEUE_MONITOR:-false}
   ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK: ${ENABLE_CHECK_UPGRADABLE_PLUGIN_TASK:-true}
-# name: ty-ai-flow
+# name: ty-ai-platform
 services:
-  # API service
+  # ================================
+  # 核心后端服务 (Core Backend Services)
+  # ================================
+
+  # API 服务 - 主要的后端工程
+  # 功能：提供所有的 REST API 接口，处理前端请求
+  # 类型：核心后端服务
+  # 重要性：★★★★★ (最重要的后端服务)
   api:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
-    build:
-      context: ../api
-      dockerfile: Dockerfile
+    #    image: langgenius/dify-api:1.7.2
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
     restart: always
     environment:
       # Use the shared environment variables.
@@ -599,6 +604,7 @@ services:
       PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+      FILES_URL: "http://172.24.0.5:5001"
     depends_on:
       db:
         condition: service_healthy
@@ -609,20 +615,20 @@ services:
     pids_limit: -1
     security_opt:
       - seccomp=unconfined
-    # volumes:
-    #   # Mount the storage directory to the container, for storing user files.
-    #   - ./volumes/app/storage:/app/api/storage
+    volumes:
+      # Mount the storage directory to the container, for storing user files.
+      - /data/huangx/docker/volumes/app/storage:/app/api/storage
     networks:
       - ssrf_proxy_network
       - default
 
-  # worker service
-  # The Celery worker for processing the queue.
+  # Worker 服务 - 后端异步任务处理器
+  # 功能：使用 Celery 处理异步任务队列，如文档处理、AI 推理等
+  # 类型：核心后端服务
+  # 重要性：★★★★☆ (重要的后端组件)
   worker:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
-    build:
-      context: ../api
-      dockerfile: Dockerfile
+    #    image: langgenius/dify-api:1.7.2
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
     restart: always
     environment:
       # Use the shared environment variables.
@@ -634,6 +640,7 @@ services:
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+    #      FILES_URL: "http://172.24.0.5:5001"
     depends_on:
       db:
         condition: service_healthy
@@ -644,18 +651,18 @@ services:
       - seccomp=unconfined
     volumes:
       # Mount the storage directory to the container, for storing user files.
-      - ./volumes/app/storage:/app/api/storage
+      - /data/huangx/docker/volumes/app/storage:/app/api/storage
     networks:
       - ssrf_proxy_network
       - default
 
-  # worker_beat service
-  # Celery beat for scheduling periodic tasks.
+  # Worker Beat 服务 - 后端定时任务调度器
+  # 功能：使用 Celery Beat 调度定期任务，如数据清理、状态检查等
+  # 类型：核心后端服务
+  # 重要性：★★★☆☆ (定时任务调度)
   worker_beat:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.1
-    build:
-      context: ../api
-      dockerfile: Dockerfile
+    #    image: langgenius/dify-api:1.7.2
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-api-1.8.0
     restart: always
     environment:
       # Use the shared environment variables.
@@ -674,12 +681,18 @@ services:
       - ssrf_proxy_network
       - default
 
-  # Frontend web application.
+  # ================================
+  # 前端服务 (Frontend Service)
+  # ================================
+
+  # Web 前端应用
+  # 功能：提供用户界面，包括管理控制台和应用界面
+  # 类型：前端服务
+  # 重要性：★★★★☆ (用户交互界面)
   web:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-1.8.1
-    build:
-      context: ../web
-      dockerfile: Dockerfile
+    #    image: langgenius/dify-web:1.7.2
+    #    image: dify-web:ty-1.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:dify-web-1.8.0
     restart: always
     ports:
       - '3000:3000'
@@ -705,9 +718,17 @@ services:
       ENABLE_WEBSITE_JINAREADER: ${ENABLE_WEBSITE_JINAREADER:-true}
       ENABLE_WEBSITE_FIRECRAWL: ${ENABLE_WEBSITE_FIRECRAWL:-true}
       ENABLE_WEBSITE_WATERCRAWL: ${ENABLE_WEBSITE_WATERCRAWL:-true}
-  # The postgres database.
+  # ================================
+  # 基础设施服务 (Infrastructure Services)
+  # ================================
+
+  # PostgreSQL 数据库
+  # 功能：存储应用数据、用户信息、对话记录等
+  # 类型：基础设施服务
+  # 重要性：★★★★★ (核心数据存储)
   db:
     image: postgres:15-alpine
+    # image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:postgres-15-alpine-1.8.0
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -725,24 +746,18 @@ services:
     volumes:
       - /data/huangx/docker/volumes/db/data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "-h",
-          "db",
-          "-U",
-          "${PGUSER:-postgres}",
-          "-d",
-          "${POSTGRES_DB:-dify}",
-        ]
+      test: [ 'CMD', 'pg_isready', '-h', 'db', '-U', '${PGUSER:-postgres}', '-d', '${POSTGRES_DB:-dify}' ]
       interval: 1s
       timeout: 3s
       retries: 60
 
-  # The redis cache.
+  # Redis 缓存服务
+  # 功能：提供缓存、会话存储、消息队列等功能
+  # 类型：基础设施服务
+  # 重要性：★★★★☆ (缓存和队列)
   redis:
     image: redis:6-alpine
+    # image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:redis-6-alpine-1.8.0
     restart: always
     environment:
       REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
@@ -752,13 +767,12 @@ services:
     # Set the redis password when startup redis server.
     command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456}
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "redis-cli -a ${REDIS_PASSWORD:-difyai123456} ping | grep -q PONG",
-        ]
+      test: [ 'CMD', 'redis-cli', 'ping' ]
 
-  # The DifySandbox
+  # Dify 沙箱服务
+  # 功能：安全执行用户代码，提供隔离的代码运行环境
+  # 类型：基础设施服务
+  # 重要性：★★★☆☆ (代码执行安全)
   sandbox:
     image: langgenius/dify-sandbox:0.2.12
     restart: always
@@ -781,11 +795,14 @@ services:
       - /data/huangx/docker/volumes/sandbox/dependencies:/dependencies
       - /data/huangx/docker/volumes/sandbox/conf:/conf
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8194/health"]
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8194/health' ]
     networks:
       - ssrf_proxy_network
 
-  # plugin daemon
+  # 插件守护进程 - 插件系统后端服务
+  # 功能：管理和执行插件，提供插件运行环境
+  # 类型：核心后端服务
+  # 重要性：★★★☆☆ (插件系统支持)
   plugin_daemon:
     image: langgenius/dify-plugin-daemon:0.2.0-local
     restart: always
@@ -841,26 +858,27 @@ services:
     ports:
       - "${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
     volumes:
+      #   - /data/huangx/docker/volumes/plugin_daemon:/app/storage
+      #   - dify_plugin_storage:/app/storage
       - ai_flow_plugin:/app/storage
+    privileged: true
+
     depends_on:
       db:
         condition: service_healthy
 
-  # ssrf_proxy server
-  # for more information, please refer to
-  # https://docs.dify.ai/learn-more/faq/install-faq#18-why-is-ssrf-proxy-needed%3F
+  # SSRF 代理服务
+  # 功能：防止服务器端请求伪造攻击，提供安全的网络请求代理
+  # 类型：安全基础设施服务
+  # 重要性：★★★☆☆ (网络安全)
+  # 更多信息：https://docs.dify.ai/learn-more/faq/install-faq#18-why-is-ssrf-proxy-needed%3F
   ssrf_proxy:
     image: ubuntu/squid:latest
     restart: always
     volumes:
       - ./ssrf_proxy/squid.conf.template:/etc/squid/squid.conf.template
       - ./ssrf_proxy/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-    entrypoint:
-      [
-        "sh",
-        "-c",
-        "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
-      ]
+    entrypoint: [ 'sh', '-c', "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh" ]
     environment:
       # pls clearly modify the squid env vars to fit your network environment.
       HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
@@ -872,30 +890,36 @@ services:
       - ssrf_proxy_network
       - default
 
-  # Certbot service
-  # use `docker-compose --profile certbot up` to start the certbot service.
+  # Certbot SSL 证书服务
+  # 功能：自动获取和更新 Let's Encrypt SSL 证书
+  # 类型：可选基础设施服务
+  # 重要性：★★☆☆☆ (HTTPS 证书管理)
+  # 使用方法：docker-compose --profile certbot up
   certbot:
     image: certbot/certbot
     profiles:
       - certbot
     volumes:
-      - ./volumes/certbot/conf:/etc/letsencrypt
-      - ./volumes/certbot/www:/var/www/html
-      - ./volumes/certbot/logs:/var/log/letsencrypt
-      - ./volumes/certbot/conf/live:/etc/letsencrypt/live
+      - /data/huangx/docker/volumes/certbot/conf:/etc/letsencrypt
+      - /data/huangx/docker/volumes/certbot/www:/var/www/html
+      - /data/huangx/docker/volumes/certbot/logs:/var/log/letsencrypt
+      - /data/huangx/docker/volumes/certbot/conf/live:/etc/letsencrypt/live
       - ./certbot/update-cert.template.txt:/update-cert.template.txt
       - ./certbot/docker-entrypoint.sh:/docker-entrypoint.sh
     environment:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
       - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
       - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
-    entrypoint: ["/docker-entrypoint.sh"]
-    command: ["tail", "-f", "/dev/null"]
+    entrypoint: [ '/docker-entrypoint.sh' ]
+    command: [ 'tail', '-f', '/dev/null' ]
 
-  # The nginx reverse proxy.
-  # used for reverse proxying the API service and Web service.
+  # Nginx 反向代理服务
+  # 功能：反向代理 API 和 Web 服务，负载均衡，SSL 终止
+  # 类型：基础设施服务
+  # 重要性：★★★★☆ (网关和代理)
   nginx:
     image: nginx:latest
+    # image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:nginx-latest-1.8.0
     restart: always
     volumes:
       - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
@@ -907,12 +931,7 @@ services:
       - /data/huangx/docker/volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
       - /data/huangx/docker/volumes/certbot/conf:/etc/letsencrypt
       - /data/huangx/docker/volumes/certbot/www:/var/www/html
-    entrypoint:
-      [
-        "sh",
-        "-c",
-        "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
-      ]
+    entrypoint: [ 'sh', '-c', "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh" ]
     environment:
       NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
       NGINX_HTTPS_ENABLED: ${NGINX_HTTPS_ENABLED:-false}
@@ -937,16 +956,25 @@ services:
       - "${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}"
       - "${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}"
 
-  # The Weaviate vector store.
+  # ================================
+  # 向量数据库服务 (Vector Database Services)
+  # ================================
+
+  # Weaviate 向量数据库
+  # 功能：存储和检索向量嵌入，支持语义搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   weaviate:
     image: semitechnologies/weaviate:1.19.0
+    # image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:weaviate-1.19.0-1.8.0
     profiles:
-      - ""
+      #   - ''
       - weaviate
     restart: always
     volumes:
       # Mount the Weaviate data directory to the con tainer.
       - /data/huangx/docker/volumes/weaviate:/var/lib/weaviate
+    #   - al_flow_vector_weaviate:/var/lib/weaviate
     environment:
       # The Weaviate configurations
       # You can refer to the [Weaviate](https://weaviate.io/developers/weaviate/config-refs/env-vars) documentation for more information.
@@ -961,19 +989,25 @@ services:
       AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
       AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
 
-  # Qdrant vector store.
-  # (if used, you need to set VECTOR_STORE to qdrant in the api & worker service.)
+  # Qdrant 向量数据库
+  # 功能：高性能向量相似性搜索引擎
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
+  # 注意：使用时需要在 api 和 worker 服务中设置 VECTOR_STORE=qdrant
   qdrant:
     image: langgenius/qdrant:v1.7.3
     profiles:
       - qdrant
     restart: always
     volumes:
-      - ./volumes/qdrant:/qdrant/storage
+      - /data/huangx/docker/volumes/qdrant:/qdrant/storage
     environment:
       QDRANT_API_KEY: ${QDRANT_API_KEY:-difyai123456}
 
-  # The Couchbase vector store.
+  # Couchbase 向量数据库
+  # 功能：NoSQL 文档数据库，支持向量搜索
+  # 类型：可选向量数据库
+  # 重要性：★★☆☆☆ (向量搜索)
   couchbase-server:
     build: ./couchbase-server
     profiles:
@@ -997,7 +1031,7 @@ services:
     entrypoint: [""]
     command: sh -c "/opt/couchbase/init/init-cbserver.sh"
     volumes:
-      - ./volumes/couchbase/data:/opt/couchbase/var/lib/couchbase/data
+      - /data/huangx/docker/volumes/couchbase/data:/opt/couchbase/var/lib/couchbase/data
     healthcheck:
       # ensure bucket was created before proceeding
       test:
@@ -1010,7 +1044,10 @@ services:
       start_period: 30s
       timeout: 10s
 
-  # The pgvector vector database.
+  # PGVector 向量数据库
+  # 功能：PostgreSQL 的向量扩展，支持向量相似性搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   pgvector:
     image: pgvector/pgvector:pg16
     profiles:
@@ -1028,7 +1065,7 @@ services:
       PG_BIGM: ${PGVECTOR_PG_BIGM:-false}
       PG_BIGM_VERSION: ${PGVECTOR_PG_BIGM_VERSION:-1.2-20240606}
     volumes:
-      - ./volumes/pgvector/data:/var/lib/postgresql/data
+      - /data/huangx/docker/volumes/pgvector/data:/var/lib/postgresql/data
       - ./pgvector/docker-entrypoint.sh:/docker-entrypoint.sh
     entrypoint: ["/docker-entrypoint.sh"]
     healthcheck:
@@ -1076,21 +1113,24 @@ services:
       # postgres data directory
       PGDATA: ${PGVECTOR_PGDATA:-/var/lib/postgresql/data/pgdata}
     volumes:
-      - ./volumes/pgvecto_rs/data:/var/lib/postgresql/data
+      - /data/huangx/docker/volumes/pgvecto_rs/data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 1s
       timeout: 3s
       retries: 30
 
-  # Chroma vector database
+  # Chroma 向量数据库
+  # 功能：开源向量数据库，专为 AI 应用设计
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   chroma:
     image: ghcr.io/chroma-core/chroma:0.5.20
     profiles:
       - chroma
     restart: always
     volumes:
-      - ./volumes/chroma:/chroma/chroma
+      - /data/huangx/docker/volumes/chroma:/chroma/chroma
     environment:
       CHROMA_SERVER_AUTHN_CREDENTIALS: ${CHROMA_SERVER_AUTHN_CREDENTIALS:-difyai123456}
       CHROMA_SERVER_AUTHN_PROVIDER: ${CHROMA_SERVER_AUTHN_PROVIDER:-chromadb.auth.token_authn.TokenAuthenticationServerProvider}
@@ -1104,9 +1144,9 @@ services:
       - oceanbase
     restart: always
     volumes:
-      - ./volumes/oceanbase/data:/root/ob
-      - ./volumes/oceanbase/conf:/root/.obd/cluster
-      - ./volumes/oceanbase/init.d:/root/boot/init.d
+      - /data/huangx/docker/volumes/oceanbase/data:/root/ob
+      - /data/huangx/docker/volumes/oceanbase/conf:/root/.obd/cluster
+      - /data/huangx/docker/volumes/oceanbase/init.d:/root/boot/init.d
     environment:
       OB_MEMORY_LIMIT: ${OCEANBASE_MEMORY_LIMIT:-6G}
       OB_SYS_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-difyai123456}
@@ -1134,7 +1174,7 @@ services:
       - oracle
     restart: always
     volumes:
-      - source: oradata
+      - source: ai_flow_oradata
         type: volume
         target: /opt/oracle/oradata
       - ./startupscripts:/opt/oracle/scripts/startup
@@ -1142,7 +1182,14 @@ services:
       ORACLE_PWD: ${ORACLE_PWD:-Dify123456}
       ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET:-AL32UTF8}
 
-  # Milvus vector database services
+  # ================================
+  # Milvus 向量数据库集群服务
+  # ================================
+
+  # Milvus 依赖：etcd 服务发现
+  # 功能：为 Milvus 提供服务发现和配置管理
+  # 类型：Milvus 依赖服务
+  # 重要性：★★☆☆☆ (Milvus 组件)
   etcd:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.5
@@ -1154,7 +1201,7 @@ services:
       ETCD_QUOTA_BACKEND_BYTES: ${ETCD_QUOTA_BACKEND_BYTES:-4294967296}
       ETCD_SNAPSHOT_COUNT: ${ETCD_SNAPSHOT_COUNT:-50000}
     volumes:
-      - ./volumes/milvus/etcd:/etcd
+      - /data/huangx/docker/volumes/milvus/etcd:/etcd
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     healthcheck:
       test: ["CMD", "etcdctl", "endpoint", "health"]
@@ -1170,8 +1217,8 @@ services:
   # 重要性：★★☆☆☆ (Milvus 组件)
   minio:
     container_name: milvus-minio
-    #    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:minio-RELEASE.2025-06-13T11-33-47Z-1.8.0
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    # image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:minio-RELEASE.2025-06-13T11-33-47Z-1.8.0
     # profiles:
     #   - milvus
     environment:
@@ -1186,7 +1233,7 @@ services:
       - 9000:9000
       - 9001:9001
     healthcheck:
-      test: [ 'CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live' ]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -1194,6 +1241,10 @@ services:
       - milvus
       - default
 
+  # Milvus 向量数据库主服务
+  # 功能：高性能向量数据库，支持大规模向量搜索
+  # 类型：可选向量数据库
+  # 重要性：★★★☆☆ (向量搜索)
   milvus-standalone:
     container_name: milvus-standalone
     image: milvusdb/milvus:v2.5.15
@@ -1205,7 +1256,8 @@ services:
       MINIO_ADDRESS: ${MINIO_ADDRESS:-minio:9000}
       common.security.authorizationEnabled: ${MILVUS_AUTHORIZATION_ENABLED:-true}
     volumes:
-      - ./volumes/milvus/milvus:/var/lib/milvus
+      #   - /data/huangx/docker/volumes/milvus/milvus:/var/lib/milvus
+      - vector_milvus
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
       interval: 30s
@@ -1221,7 +1273,14 @@ services:
     networks:
       - milvus
 
-  # Opensearch vector database
+  # ================================
+  # OpenSearch 搜索引擎服务
+  # ================================
+
+  # OpenSearch 搜索引擎
+  # 功能：全文搜索和向量搜索引擎
+  # 类型：可选搜索引擎
+  # 重要性：★★★☆☆ (搜索引擎)
   opensearch:
     container_name: opensearch
     image: opensearchproject/opensearch:latest
@@ -1240,10 +1299,14 @@ services:
         soft: ${OPENSEARCH_NOFILE_SOFT:-65536}
         hard: ${OPENSEARCH_NOFILE_HARD:-65536}
     volumes:
-      - ./volumes/opensearch/data:/usr/share/opensearch/data
+      - /data/huangx/docker/volumes/opensearch/data:/usr/share/opensearch/data
     networks:
       - opensearch-net
 
+  # OpenSearch 仪表板
+  # 功能：OpenSearch 的可视化管理界面
+  # 类型：可选管理工具
+  # 重要性：★★☆☆☆ (管理界面)
   opensearch-dashboards:
     container_name: opensearch-dashboards
     image: opensearchproject/opensearch-dashboards:latest
@@ -1252,7 +1315,7 @@ services:
     environment:
       OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
     volumes:
-      - ./volumes/opensearch/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
+      - /data/huangx/docker/volumes/opensearch/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     networks:
       - opensearch-net
     depends_on:
@@ -1271,7 +1334,7 @@ services:
       GS_PORT: ${OPENGAUSS_PORT:-6600}
       GS_DB: ${OPENGAUSS_DATABASE:-dify}
     volumes:
-      - ./volumes/opengauss/data:/var/lib/opengauss/data
+      - /data/huangx/docker/volumes/opengauss/data:/var/lib/opengauss/data
     healthcheck:
       test: ["CMD-SHELL", "netstat -lntp | grep tcp6 > /dev/null 2>&1"]
       interval: 10s
@@ -1289,9 +1352,9 @@ services:
     restart: always
     tty: true
     volumes:
-      - ./volumes/myscale/data:/var/lib/clickhouse
-      - ./volumes/myscale/log:/var/log/clickhouse-server
-      - ./volumes/myscale/config/users.d/custom_users_config.xml:/etc/clickhouse-server/users.d/custom_users_config.xml
+      - /data/huangx/docker/volumes/myscale/data:/var/lib/clickhouse
+      - /data/huangx/docker/volumes/myscale/log:/var/log/clickhouse-server
+      - /data/huangx/docker/volumes/myscale/config/users.d/custom_users_config.xml:/etc/clickhouse-server/users.d/custom_users_config.xml
     ports:
       - ${MYSCALE_PORT:-8123}:${MYSCALE_PORT:-8123}
 
@@ -1303,12 +1366,19 @@ services:
       - matrixone
     restart: always
     volumes:
-      - ./volumes/matrixone/data:/mo-data
+      - /data/huangx/docker/volumes/matrixone/data:/mo-data
     ports:
       - ${MATRIXONE_PORT:-6001}:${MATRIXONE_PORT:-6001}
 
-  # https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
-  # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites
+  # ================================
+  # Elasticsearch 搜索引擎服务
+  # ================================
+
+  # Elasticsearch 搜索引擎
+  # 功能：全文搜索和分析引擎，支持向量搜索
+  # 类型：可选搜索引擎
+  # 重要性：★★★☆☆ (搜索引擎)
+  # 文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
     container_name: elasticsearch
@@ -1318,7 +1388,7 @@ services:
     restart: always
     volumes:
       - ./elasticsearch/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-      - dify_es01_data:/usr/share/elasticsearch/data
+      - al_flow_es01_data:/usr/share/elasticsearch/data
     environment:
       ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD:-elastic}
       VECTOR_STORE: ${VECTOR_STORE:-}
@@ -1343,8 +1413,11 @@ services:
       timeout: 10s
       retries: 50
 
-  # https://www.elastic.co/guide/en/kibana/current/docker.html
-  # https://www.elastic.co/guide/en/kibana/current/settings.html
+  # Kibana 可视化工具
+  # 功能：Elasticsearch 的数据可视化和管理界面
+  # 类型：可选管理工具
+  # 重要性：★★☆☆☆ (数据可视化)
+  # 文档：https://www.elastic.co/guide/en/kibana/current/
   kibana:
     image: docker.elastic.co/kibana/kibana:8.14.3
     container_name: kibana
@@ -1371,27 +1444,35 @@ services:
       timeout: 10s
       retries: 3
 
-  # unstructured .
-  # (if used, you need to set ETL_TYPE to Unstructured in the api & worker service.)
+  # ================================
+  # 文档处理服务 (Document Processing Services)
+  # ================================
+
+  # Unstructured 文档处理服务
+  # 功能：处理非结构化文档，提取文本和元数据
+  # 类型：可选文档处理服务
+  # 重要性：★★☆☆☆ (文档处理)
+  # 注意：使用时需要在 api 和 worker 服务中设置 ETL_TYPE=Unstructured
   unstructured:
     image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
     profiles:
       - unstructured
     restart: always
     volumes:
-      - ./volumes/unstructured:/app/data
+      - /data/huangx/docker/volumes/unstructured:/app/data
+
 
   ## function tool
   ## 试卷生成工具
   quiz-flask-service:
     image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.0
-    build: ./quiz-flask-service
+    # build: ./quiz-flask-service
     container_name: quiz-flask-service
     restart: always
     environment:
       # 配置服务的外部访问地址
       # 根据你的实际部署环境调整这些值
-      QUIZ_SERVICE_HOST: ${QUIZ_SERVICE_HOST:-localhost}  # 改为你的服务器IP或域名
+      QUIZ_SERVICE_HOST: ${QUIZ_SERVICE_HOST:-172.24.0.5}
       QUIZ_SERVICE_PORT: ${QUIZ_SERVICE_PORT:-5006}
       QUIZ_SERVICE_PROTOCOL: ${QUIZ_SERVICE_PROTOCOL:-http}
     volumes:
@@ -1403,12 +1484,11 @@ services:
     security_opt:
       - seccomp=unconfined
 
-
   mineru-sglang-server:
     image: mineru-sglang:latest
     container_name: mineru-sglang-server
     restart: always
-    #    profiles: ["sglang-server"]
+    # profiles: ["sglang-server"]
     ports:
       - 30000:30000
     environment:
@@ -1422,7 +1502,7 @@ services:
       --dp-size 2
       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-    # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+      # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
       memlock: -1
@@ -1451,7 +1531,7 @@ services:
     image: mineru-sglang:latest
     container_name: mineru-api
     restart: always
-    #    profiles: ["api"]
+    # profiles: ["api"]
     ports:
       - 8000:8000
     environment:
@@ -1466,7 +1546,7 @@ services:
       # parameters for sglang-engine
       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-    # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+      # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
       memlock: -1
@@ -1485,6 +1565,21 @@ services:
     #   resources:
     #     reservations:
     #       devices: []
+
+#   minio:
+#     image: minio/minio:latest
+#     container_name: minio
+#     restart: always
+#     ports:
+#       - "9000:9000"   # API 端口（Dify 用这个）
+#       - "9001:9001"   # 控制台端口
+#     environment:
+#       MINIO_ROOT_USER: minioadmin          # 管理员用户名，可改
+#       MINIO_ROOT_PASSWORD: minioadmin123   # 管理员密码，务必改复杂
+#     volumes:
+#       - /data/huangx/docker/volumes/minio/data:/data              # 存放对象数据
+#       - /data/huangx/docker/volumes/minio/config:/root/.minio     # 配置文件/证书
+#     command: server /data --console-address ":9001"
 
 # ================================
 # 网络配置 (Network Configuration)
