@@ -1384,7 +1384,7 @@ services:
   ## function tool
   ## 试卷生成工具
   quiz-flask-service:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.0
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.1
     build: ./quiz-flask-service
     container_name: quiz-flask-service
     restart: always
