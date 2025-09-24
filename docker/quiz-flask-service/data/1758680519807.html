@@ -39,6 +39,9 @@
             color: white;
             padding: 2rem;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .quiz-header h1 {
@@ -234,6 +237,32 @@
             min-width: 150px;
             flex-shrink: 0;
             white-space: nowrap;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            order: 1;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            color: white !important;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            order: 2;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            color: white !important;
         }
 
         .score-card {
@@ -434,6 +463,18 @@
             position: relative;
             z-index: 1;
         }
+
+        #check-questions {
+            position: static !important; /* 覆盖绝对定位，使其回到文档流 */
+            clip: auto !important;       /* 移除剪裁 */
+            pointer-events: auto !important; /* 允许鼠标事件 */
+            height: auto !important;     /* 确保有高度 */
+            width: auto !important;      /* 确保有宽度 */
+            overflow: visible !important; /* 确保内容可见 */
+            display: inline-flex !important; /* 确保它以 flex 方式显示，与你预期一致 */
+            visibility: visible !important; /* 确保可见 */
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -450,35 +491,33 @@
 </div>
 
 <div class="quiz-content">
-    <h1>废水处理危害识别分析及改进措施考卷</h1>
+    <h1>应急原则与应急组织机构及职责考卷</h1>
+
 <h2>一、单选题</h2>
-<div class="question-block radio-question" data-question-id="radio-question-1755085461456088-77281">
-            <div class="question-text">在废水处理场的危害识别分析中，以下哪项是主要目标？</div>
-            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_34340" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_34340">A. 提高废水处理效率</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="0" data-content="1" id="radio_radio-question-1755085461456088-77281_1755085461456_21291" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_21291">B. 系统地识别所有可能影响健康、安全和环境的危害</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_53939" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_53939">C. 降低运营成本</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456088-77281" data-question="1" data-content="0" id="radio_radio-question-1755085461456088-77281_1755085461456_17305" /><label for="radio_radio-question-1755085461456088-77281_1755085461456_17305">D. 提高员工操作技能</label></li></ul>
+<div class="question-block radio-question" data-question-id="radio-question-1758680519798906-36641">
+            <div class="question-text">根据《電石廠應急預案》，应急救援组织机构图的主要作用是：</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1758680519798906-36641" data-question="1" data-content="0" id="radio_radio-question-1758680519798906-36641_1758680519799_61865" /><label for="radio_radio-question-1758680519798906-36641_1758680519799_61865">A. 展示厂区平面布局</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519798906-36641" data-question="0" data-content="1" id="radio_radio-question-1758680519798906-36641_1758680519799_98619" /><label for="radio_radio-question-1758680519798906-36641_1758680519799_98619">B. 明确应急指挥体系和职责分工</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519798906-36641" data-question="1" data-content="0" id="radio_radio-question-1758680519798906-36641_1758680519799_73071" /><label for="radio_radio-question-1758680519798906-36641_1758680519799_73071">C. 记录设备维护周期</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519798906-36641" data-question="1" data-content="0" id="radio_radio-question-1758680519798906-36641_1758680519799_44032" /><label for="radio_radio-question-1758680519798906-36641_1758680519799_44032">D. 统计员工出勤情况</label></li></ul>
         </div>
 
-<div class="question-block radio-question" data-question-id="radio-question-1755085461456260-83700">
-            <div class="question-text">在废水处理过程中，以下哪项属于中等风险？</div>
-            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_74228" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_74228">A. 鼓风机定期校准</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="0" data-content="1" id="radio_radio-question-1755085461456260-83700_1755085461456_57564" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_57564">B. 储渣池液位计故障失效</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_63387" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_63387">C. 生化处理系统中pH值正常</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456260-83700" data-question="1" data-content="0" id="radio_radio-question-1755085461456260-83700_1755085461456_56035" /><label for="radio_radio-question-1755085461456260-83700_1755085461456_56035">D. 放流水取样泵正常运行</label></li></ul>
+<div class="question-block radio-question" data-question-id="radio-question-1758680519799137-92674">
+            <div class="question-text">在应急预案中，应急原则的核心目标是：</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1758680519799137-92674" data-question="1" data-content="0" id="radio_radio-question-1758680519799137-92674_1758680519799_87539" /><label for="radio_radio-question-1758680519799137-92674_1758680519799_87539">A. 提高生产效率</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799137-92674" data-question="0" data-content="1" id="radio_radio-question-1758680519799137-92674_1758680519799_35577" /><label for="radio_radio-question-1758680519799137-92674_1758680519799_35577">B. 保障人员安全、控制事态发展、减少损失</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799137-92674" data-question="1" data-content="0" id="radio_radio-question-1758680519799137-92674_1758680519799_97930" /><label for="radio_radio-question-1758680519799137-92674_1758680519799_97930">C. 优化工艺流程</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799137-92674" data-question="1" data-content="0" id="radio_radio-question-1758680519799137-92674_1758680519799_49089" /><label for="radio_radio-question-1758680519799137-92674_1758680519799_49089">D. 降低能耗</label></li></ul>
         </div>
 
-<h2>二、多选题</h2>
-<div class="question-block checklist-question">
-                <div class="question-text">在废水处理场的HAZID研究中，以下哪些系统被划分为分析节点？（可多选）</div>
-                <ul class="option-list checklist"><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456304_674758_688e464a" /><label for="checkbox_1755085461456304_674758_688e464a">A. 水处理</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456334_151519_53e418c9" /><label for="checkbox_1755085461456334_151519_53e418c9">B. 污泥处理</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456341_813147_93ab33d0" /><label for="checkbox_1755085461456341_813147_93ab33d0">C. 化学药剂</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456349_790191_3fa6f4c2" /><label for="checkbox_1755085461456349_790191_3fa6f4c2">D. 辅助系统</label></li></ul>
-            </div>
-
-<div class="question-block checklist-question">
-                <div class="question-text">在废水处理场的危害识别分析中，以下哪些风险水平被识别？（可多选）</div>
-                <ul class="option-list checklist"><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456353_626313_d4b7aaeb" /><label for="checkbox_1755085461456353_626313_d4b7aaeb">A. 中等风险</label></li><li class="option-item"><input type="checkbox" data-question="0" data-content="1" id="checkbox_1755085461456357_292334_1c853f9c" /><label for="checkbox_1755085461456357_292334_1c853f9c">B. 低风险</label></li><li class="option-item"><input type="checkbox" data-question="1" data-content="0" id="checkbox_1755085461456360_451149_53906fec" /><label for="checkbox_1755085461456360_451149_53906fec">C. 高风险</label></li><li class="option-item"><input type="checkbox" data-question="1" data-content="0" id="checkbox_1755085461456365_158665_cbf84230" /><label for="checkbox_1755085461456365_158665_cbf84230">D. 极高风险</label></li></ul>
-            </div>
-
-<h2>三、判断题</h2>
-<div class="question-block radio-question" data-question-id="radio-question-1755085461456285-69312">
-            <div class="question-text">在废水处理场的HAZID研究中，所有识别出的危害中不存在高风险危害。</div>
-            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1755085461456285-69312" data-question="0" data-content="1" id="radio_radio-question-1755085461456285-69312_1755085461456_55812" /><label for="radio_radio-question-1755085461456285-69312_1755085461456_55812">正确</label></li><li class="option-item"><input type="radio" name="radio-question-1755085461456285-69312" data-question="1" data-content="0" id="radio_radio-question-1755085461456285-69312_1755085461456_22709" /><label for="radio_radio-question-1755085461456285-69312_1755085461456_22709">错误</label></li></ul>
+<div class="question-block radio-question" data-question-id="radio-question-1758680519799174-97384">
+            <div class="question-text">应急救援组织机构中，通常负责现场指挥的是：</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1758680519799174-97384" data-question="1" data-content="0" id="radio_radio-question-1758680519799174-97384_1758680519799_95498" /><label for="radio_radio-question-1758680519799174-97384_1758680519799_95498">A. 普通操作员</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799174-97384" data-question="1" data-content="0" id="radio_radio-question-1758680519799174-97384_1758680519799_58697" /><label for="radio_radio-question-1758680519799174-97384_1758680519799_58697">C. 安全员</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799174-97384" data-question="0" data-content="1" id="radio_radio-question-1758680519799174-97384_1758680519799_46762" /><label for="radio_radio-question-1758680519799174-97384_1758680519799_46762">B. 应急总指挥</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799174-97384" data-question="1" data-content="0" id="radio_radio-question-1758680519799174-97384_1758680519799_58597" /><label for="radio_radio-question-1758680519799174-97384_1758680519799_58597">D. 外部消防员</label></li></ul>
         </div>
 
+<div class="question-block radio-question" data-question-id="radio-question-1758680519799197-54081">
+            <div class="question-text">根据应急原则，发生事故时首要处理的是：</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1758680519799197-54081" data-question="1" data-content="0" id="radio_radio-question-1758680519799197-54081_1758680519799_57791" /><label for="radio_radio-question-1758680519799197-54081_1758680519799_57791">A. 设备损坏情况</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799197-54081" data-question="0" data-content="1" id="radio_radio-question-1758680519799197-54081_1758680519799_45832" /><label for="radio_radio-question-1758680519799197-54081_1758680519799_45832">B. 人员伤亡和疏散</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799197-54081" data-question="1" data-content="0" id="radio_radio-question-1758680519799197-54081_1758680519799_64837" /><label for="radio_radio-question-1758680519799197-54081_1758680519799_64837">C. 生产数据记录</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799197-54081" data-question="1" data-content="0" id="radio_radio-question-1758680519799197-54081_1758680519799_90051" /><label for="radio_radio-question-1758680519799197-54081_1758680519799_90051">D. 媒体公关</label></li></ul>
+        </div>
+
+<div class="question-block radio-question" data-question-id="radio-question-1758680519799222-27808">
+            <div class="question-text">应急组织机构图中一般不包含以下哪个部分？</div>
+            <ul class="option-list radio-options"><li class="option-item"><input type="radio" name="radio-question-1758680519799222-27808" data-question="1" data-content="0" id="radio_radio-question-1758680519799222-27808_1758680519799_82079" /><label for="radio_radio-question-1758680519799222-27808_1758680519799_82079">A. 指挥组</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799222-27808" data-question="1" data-content="0" id="radio_radio-question-1758680519799222-27808_1758680519799_58971" /><label for="radio_radio-question-1758680519799222-27808_1758680519799_58971">B. 救援组</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799222-27808" data-question="1" data-content="0" id="radio_radio-question-1758680519799222-27808_1758680519799_71126" /><label for="radio_radio-question-1758680519799222-27808_1758680519799_71126">C. 后勤保障组</label></li><li class="option-item"><input type="radio" name="radio-question-1758680519799222-27808" data-question="0" data-content="1" id="radio_radio-question-1758680519799222-27808_1758680519799_68112" /><label for="radio_radio-question-1758680519799222-27808_1758680519799_68112">D. 人事招聘组</label></li></ul>
+        </div>
 </div>
 
 <div id="score-display" class="score-card">

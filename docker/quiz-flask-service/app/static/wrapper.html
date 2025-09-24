@@ -39,6 +39,9 @@
             color: white;
             padding: 2rem;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .quiz-header h1 {
@@ -460,6 +463,18 @@
             position: relative;
             z-index: 1;
         }
+
+        #check-questions {
+            position: static !important; /* 覆盖绝对定位，使其回到文档流 */
+            clip: auto !important;       /* 移除剪裁 */
+            pointer-events: auto !important; /* 允许鼠标事件 */
+            height: auto !important;     /* 确保有高度 */
+            width: auto !important;      /* 确保有宽度 */
+            overflow: visible !important; /* 确保内容可见 */
+            display: inline-flex !important; /* 确保它以 flex 方式显示，与你预期一致 */
+            visibility: visible !important; /* 确保可见 */
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
