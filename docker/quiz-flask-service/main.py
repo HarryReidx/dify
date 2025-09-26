@@ -26,207 +26,91 @@ def post_process_quiz_html(html):
     # Remove horizontal rules (hr tags) that separate questions
     processed_html = re.sub(r'<hr\s*/?>', '', html)
 
-    # STEP 1: Convert radio-list to question-block (handles single choice and true/false)
+    # Step 1: Handle radio questions (single choice) - fix radio button grouping
     radio_pattern = re.compile(
-        r'<ul class="radio-list"[^>]*data-question-id="([^"]+)"[^>]*>(.*?)</ul>(?:\s*</li>)?(?:\s*</ol>)?',
+        r'<div class="question-block radio-question"[^>]*>\s*'
+        r'<div class="question-text">([^<]+)</div>\s*'
+        r'<ul class="option-list radio-options">(.*?)</ul>\s*'
+        r'</div>',
         re.MULTILINE | re.DOTALL
     )
 
-    def convert_radio_question(match):
-        question_id = match.group(1)
-        content = match.group(2)
-
-        # Extract question text from the first <li> that doesn't have class="option-item"
-        question_text = ""
-
-        # First try to find question text in <p> tags
-        p_matches = re.findall(r'<p>([^<]+)</p>', content)
-        if p_matches:
-            question_text = p_matches[0].strip()
-        else:
-            # If no <p> tags, look for the first <li> without class="option-item"
-            li_matches = re.findall(r'<li>([^<]+)</li>', content)
-            if li_matches:
-                question_text = li_matches[0].strip()
-
-        # Extract all option items
-        options = re.findall(r'<li class="option-item"[^>]*>.*?</li>', content, re.DOTALL)
-        options_html = ''.join(options)
-
-        if not question_text:
-            question_text = "题目"
-
+    def fix_radio_question(match):
+        question_text = match.group(1).strip()
+        options_content = match.group(2)
+        
+        # Generate unique question ID for radio grouping
+        import time
+        import random
+        question_id = f"radio-question-{int(time.time() * 1000000)}-{random.randint(10000, 99999)}"
+        
+        # Update all radio buttons to use the same name (group)
+        def update_radio_name(radio_match):
+            return re.sub(r'name="[^"]*"', f'name="{question_id}"', radio_match.group(0))
+        
+        fixed_options = re.sub(r'<input[^>]*type="radio"[^>]*>', update_radio_name, options_content)
+        
         return f'''<div class="question-block radio-question" data-question-id="{question_id}">
             <div class="question-text">{question_text}</div>
-            <ul class="option-list radio-options">{options_html}</ul>
+            <ul class="option-list radio-options">{fixed_options}</ul>
         </div>'''
 
-    processed_html = radio_pattern.sub(convert_radio_question, processed_html)
+    processed_html = radio_pattern.sub(fix_radio_question, processed_html)
 
-    # STEP 1.2: Handle radio questions in ol format (similar to checkbox)
-    radio_ol_pattern = re.compile(
-        r'<ol>\s*<li>([^<]+)</li>\s*((?:<li class="option-item"[^>]*>.*?</li>\s*)+)</ol>',
+    # Step 2: Handle checkbox questions (multiple choice) - convert ol/li to question-blocks
+    # Pattern to match the entire ol block containing checkbox questions
+    ol_pattern = re.compile(
+        r'<ol>\s*(.*?)\s*</ol>',
         re.MULTILINE | re.DOTALL
     )
 
-    def convert_radio_ol_question(match):
-        question_text = match.group(1).strip()
-        options_content = match.group(2)
-
-        # Check if this contains radio inputs
-        if 'type="radio"' in options_content:
-            # Extract all option items
-            options = re.findall(r'<li class="option-item"[^>]*>.*?</li>', options_content, re.DOTALL)
+    def convert_ol_to_questions(match):
+        ol_content = match.group(1)
+        
+        # Split content into individual questions and their options
+        # Look for question text followed by option items
+        questions = []
+        current_question = None
+        current_options = []
+        
+        # Split by li tags and process each
+        li_items = re.findall(r'<li[^>]*>(.*?)</li>', ol_content, re.DOTALL)
+        
+        for li_content in li_items:
+            # Check if this li contains a checkbox input (it's an option)
+            if 'type="checkbox"' in li_content:
+                current_options.append(f'<li class="option-item">{li_content}</li>')
+            else:
+                # This is a question text
+                if current_question and current_options:
+                    # Save previous question
+                    questions.append((current_question, current_options))
+                
+                # Start new question
+                # Extract text from p tag if present, otherwise use the content directly
+                question_match = re.search(r'<p>([^<]+)</p>', li_content)
+                if question_match:
+                    current_question = question_match.group(1).strip()
+                else:
+                    current_question = re.sub(r'<[^>]+>', '', li_content).strip()
+                current_options = []
+        
+        # Don't forget the last question
+        if current_question and current_options:
+            questions.append((current_question, current_options))
+        
+        # Convert each question to a question-block
+        result = ""
+        for question_text, options in questions:
             options_html = ''.join(options)
-
-            # Generate a unique question ID for radio grouping
-            import time
-            import random
-            question_id = f"radio-question-{int(time.time() * 1000000)}-{random.randint(10000, 99999)}"
-
-            # Update radio button names to use the same group
-            import re as re_inner
-            def update_radio_name(radio_match):
-                return radio_match.group(0).replace('name="', f'name="{question_id}"')
-
-            options_html = re_inner.sub(r'<input[^>]*type="radio"[^>]*name="[^"]*"[^>]*>', update_radio_name, options_html)
-
-            return f'''<div class="question-block radio-question" data-question-id="{question_id}">
-                <div class="question-text">{question_text}</div>
-                <ul class="option-list radio-options">{options_html}</ul>
-            </div>'''
-        else:
-            # Not a radio question, return original
-            return match.group(0)
-
-    processed_html = radio_ol_pattern.sub(convert_radio_ol_question, processed_html)
-
-    # STEP 1.5: Convert checklist to question-block (handles multiple choice questions)
-    # First, handle ol/ul that contains checkbox inputs (most common case)
-    checkbox_ol_pattern = re.compile(
-        r'<ol>\s*<li>([^<]+)</li>\s*((?:<li class="option-item"[^>]*>.*?</li>\s*)+)</ol>',
-        re.MULTILINE | re.DOTALL
-    )
-
-    def convert_checkbox_ol_question(match):
-        question_text = match.group(1).strip()
-        options_content = match.group(2)
-
-        # Check if this contains checkbox inputs
-        if 'type="checkbox"' in options_content:
-            # Extract all option items
-            options = re.findall(r'<li class="option-item"[^>]*>.*?</li>', options_content, re.DOTALL)
-            options_html = ''.join(options)
-
-            return f'''<div class="question-block checklist-question">
+            result += f'''<div class="question-block checklist-question">
                 <div class="question-text">{question_text}</div>
                 <ul class="option-list checklist">{options_html}</ul>
             </div>'''
-        else:
-            # Not a checkbox question, return original
-            return match.group(0)
-
-    processed_html = checkbox_ol_pattern.sub(convert_checkbox_ol_question, processed_html)
-
-    # Then handle checklist within li elements
-    li_checklist_pattern = re.compile(
-        r'<li>\s*<p>([^<]+)</p>\s*<ul class="checklist"[^>]*>(.*?)</ul>\s*</li>',
-        re.MULTILINE | re.DOTALL
-    )
-
-    def convert_li_checklist_question(match):
-        question_text = match.group(1).strip()
-        content = match.group(2)
-
-        # Extract all option items
-        options = re.findall(r'<li class="option-item"[^>]*>.*?</li>', content, re.DOTALL)
-        options_html = ''.join(options)
-
-        return f'''<div class="question-block checklist-question">
-            <div class="question-text">{question_text}</div>
-            <ul class="option-list checklist">{options_html}</ul>
-        </div>'''
-
-    processed_html = li_checklist_pattern.sub(convert_li_checklist_question, processed_html)
-
-    # Finally handle standalone checklist (fallback)
-    standalone_checklist_pattern = re.compile(
-        r'<ul class="checklist"[^>]*>(.*?)</ul>(?:\s*</li>)?(?:\s*</ol>)?',
-        re.MULTILINE | re.DOTALL
-    )
-
-    def convert_standalone_checklist_question(match):
-        content = match.group(1)
-
-        # Extract all option items
-        options = re.findall(r'<li class="option-item"[^>]*>.*?</li>', content, re.DOTALL)
-        options_html = ''.join(options)
-
-        return f'''<div class="question-block checklist-question">
-            <div class="question-text">题目</div>
-            <ul class="option-list checklist">{options_html}</ul>
-        </div>'''
-
-    processed_html = standalone_checklist_pattern.sub(convert_standalone_checklist_question, processed_html)
-
-    # STEP 2: Convert ol/li to question-block (handles multiple choice and fill-in-the-blank)
-    ol_pattern = re.compile(r'<ol>(.*?)</ol>', re.MULTILINE | re.DOTALL)
-
-    def convert_ol_questions(match):
-        content = match.group(1)
-        result = ""
-
-        # Find li elements with nested ul
-        li_pattern = re.compile(
-            r'<li>\s*<p>([^<]+)</p>\s*<ul class="(checklist|textbox)"[^>]*>(.*?)</ul>\s*</li>',
-            re.MULTILINE | re.DOTALL
-        )
-
-        for li_match in li_pattern.finditer(content):
-            question_text = li_match.group(1).strip()
-            list_class = li_match.group(2)
-            options_content = li_match.group(3)
-
-            # Extract option items
-            options = re.findall(r'<li class="option-item[^"]*"[^>]*>.*?</li>', options_content, re.DOTALL)
-            options_html = ''.join(options)
-
-            result += f'''<div class="question-block">
-                <div class="question-text">{question_text}</div>
-                <ul class="option-list {list_class}">{options_html}</ul>
-            </div>'''
-
+        
         return result
 
-    processed_html = ol_pattern.sub(convert_ol_questions, processed_html)
-
-    # STEP 3: Handle remaining orphaned li elements with ul (not inside ol)
-    orphaned_li_pattern = re.compile(
-        r'<li>\s*<p>([^<]+)</p>\s*<ul class="(checklist|textbox)"[^>]*>(.*?)</ul>\s*</li>',
-        re.MULTILINE | re.DOTALL
-    )
-
-    def convert_orphaned_li(match):
-        question_text = match.group(1).strip()
-        list_class = match.group(2)
-        options_content = match.group(3)
-
-        # Extract option items
-        options = re.findall(r'<li class="option-item[^"]*"[^>]*>.*?</li>', options_content, re.DOTALL)
-        options_html = ''.join(options)
-
-        return f'''<div class="question-block">
-            <div class="question-text">{question_text}</div>
-            <ul class="option-list {list_class}">{options_html}</ul>
-        </div>'''
-
-    processed_html = orphaned_li_pattern.sub(convert_orphaned_li, processed_html)
-
-    # STEP 4: Simple cleanup
-    processed_html = re.sub(r'</li>\s*(?=<h[1-6])', '', processed_html)
-    processed_html = re.sub(r'</ol>\s*(?=<h[1-6])', '', processed_html)
-    processed_html = re.sub(r'<li>\s*<p>([^<]+)</p>\s*(?=<h[1-6])', '', processed_html)
-    processed_html = re.sub(r'<li>\s*<p>([^<]+)</p>\s*(?=<div class="question-block")', '', processed_html)
+    processed_html = ol_pattern.sub(convert_ol_to_questions, processed_html)
 
     # Clean up extra whitespace
     processed_html = re.sub(r'\n\s*\n\s*\n+', '\n\n', processed_html)
@@ -241,7 +125,6 @@ app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
 # 配置服务器地址和端口
-# 从环境变量获取，如果没有设置则使用默认值
 QUIZ_SERVICE_HOST = os.environ.get('QUIZ_SERVICE_HOST', '127.0.0.1')
 QUIZ_SERVICE_PORT = os.environ.get('QUIZ_SERVICE_PORT', '5006')
 QUIZ_SERVICE_PROTOCOL = os.environ.get('QUIZ_SERVICE_PROTOCOL', 'http')
