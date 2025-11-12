@@ -1,3 +1,8 @@
+import type { CollectionType } from '../../tools/types'
+
+export type { AddApiKeyButtonProps } from './authorize/add-api-key-button'
+export type { AddOAuthButtonProps } from './authorize/add-oauth-button'
+
 export enum AuthCategory {
   tool = 'tool',
   datasource = 'datasource',
@@ -7,6 +12,7 @@ export enum AuthCategory {
 export type PluginPayload = {
   category: AuthCategory
   provider: string
+  providerType: CollectionType | string
 }
 
 export enum CredentialTypeEnum {

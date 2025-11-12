@@ -6,6 +6,7 @@ from faker import Faker
 from core.tools.entities.api_entities import ToolProviderApiEntity
 from core.tools.entities.common_entities import I18nObject
 from core.tools.entities.tool_entities import ToolProviderType
+from libs.uuid_utils import uuidv7
 from models.tools import ApiToolProvider, BuiltinToolProvider, MCPToolProvider, WorkflowToolProvider
 from services.tools.tools_transform_service import ToolTransformService
 
@@ -66,6 +67,7 @@ class TestToolTransformService:
             )
         elif provider_type == "workflow":
             provider = WorkflowToolProvider(
+                id=str(uuidv7()),
                 name=fake.company(),
                 description=fake.text(max_nb_chars=100),
                 icon='{"background": "#FF6B6B", "content": "🔧"}',
@@ -168,7 +170,7 @@ class TestToolTransformService:
         """
         # Arrange: Setup test data
         fake = Faker()
-        provider_type = ToolProviderType.BUILT_IN.value
+        provider_type = ToolProviderType.BUILT_IN
         provider_name = fake.company()
         icon = "🔧"
 
@@ -206,7 +208,7 @@ class TestToolTransformService:
         """
         # Arrange: Setup test data
         fake = Faker()
-        provider_type = ToolProviderType.API.value
+        provider_type = ToolProviderType.API
         provider_name = fake.company()
         icon = '{"background": "#FF6B6B", "content": "🔧"}'
 
@@ -231,7 +233,7 @@ class TestToolTransformService:
         """
         # Arrange: Setup test data with invalid JSON
         fake = Faker()
-        provider_type = ToolProviderType.API.value
+        provider_type = ToolProviderType.API
         provider_name = fake.company()
         icon = '{"invalid": json}'
 
@@ -257,7 +259,7 @@ class TestToolTransformService:
         """
         # Arrange: Setup test data
         fake = Faker()
-        provider_type = ToolProviderType.WORKFLOW.value
+        provider_type = ToolProviderType.WORKFLOW
         provider_name = fake.company()
         icon = {"background": "#FF6B6B", "content": "🔧"}
 
@@ -282,7 +284,7 @@ class TestToolTransformService:
         """
         # Arrange: Setup test data
         fake = Faker()
-        provider_type = ToolProviderType.MCP.value
+        provider_type = ToolProviderType.MCP
         provider_name = fake.company()
         icon = {"background": "#FF6B6B", "content": "🔧"}
 
@@ -329,7 +331,7 @@ class TestToolTransformService:
         # Arrange: Setup test data
         fake = Faker()
         tenant_id = fake.uuid4()
-        provider = {"type": ToolProviderType.BUILT_IN.value, "name": fake.company(), "icon": "🔧"}
+        provider = {"type": ToolProviderType.BUILT_IN, "name": fake.company(), "icon": "🔧"}
 
         # Act: Execute the method under test
         ToolTransformService.repack_provider(tenant_id, provider)
@@ -454,7 +456,7 @@ class TestToolTransformService:
             name=fake.company(),
             description=I18nObject(en_US=fake.text(max_nb_chars=100)),
             icon='{"background": "#FF6B6B", "content": "🔧"}',
-            icon_dark=None,
+            icon_dark="",
             label=I18nObject(en_US=fake.company()),
             type=ToolProviderType.API,
             masked_credentials={},
@@ -473,8 +475,8 @@ class TestToolTransformService:
         assert provider.icon["background"] == "#FF6B6B"
         assert provider.icon["content"] == "🔧"
 
-        # Verify dark icon remains None
-        assert provider.icon_dark is None
+        # Verify dark icon remains empty string
+        assert provider.icon_dark == ""
 
     def test_builtin_provider_to_user_provider_success(
         self, db_session_with_containers, mock_external_service_dependencies
@@ -628,7 +630,7 @@ class TestToolTransformService:
         assert result is not None
         assert result.is_team_authorization is True
         assert result.allow_delete is False
-        assert result.masked_credentials == {}
+        assert result.masked_credentials == {"api_key": ""}
 
     def test_api_provider_to_controller_success(self, db_session_with_containers, mock_external_service_dependencies):
         """
@@ -758,6 +760,7 @@ class TestToolTransformService:
 
         # Create workflow tool provider
         provider = WorkflowToolProvider(
+            id=str(uuidv7()),
             name=fake.company(),
             description=fake.text(max_nb_chars=100),
             icon='{"background": "#FF6B6B", "content": "🔧"}',

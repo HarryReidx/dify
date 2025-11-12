@@ -67,6 +67,10 @@ const translation = {
     sure: 'Saya yakin',
     imageCopied: 'Gambar yang disalin',
     config: 'Konfigurasi',
+    deleteConfirmTitle: 'Hapus?',
+    confirmAction: 'Silakan konfirmasi tindakan Anda.',
+    yes: 'Ya',
+    no: 'Tidak',
   },
   errorMsg: {
     urlError: 'URL harus dimulai dengan http:// atau https://',
@@ -159,7 +163,6 @@ const translation = {
     helpCenter: 'Docs',
     compliance: 'Kepatuhan',
     community: 'Masyarakat',
-    communityFeedback: 'Umpan balik',
     roadmap: 'Peta jalan',
     logout: 'Keluar',
     settings: 'Pengaturan',
@@ -168,6 +171,8 @@ const translation = {
     about: 'Tentang',
     workspace: 'Workspace',
     createWorkspace: 'Membuat Ruang Kerja',
+    contactUs: 'Hubungi Kami',
+    forum: 'Forum',
   },
   compliance: {
     soc2Type2: 'Laporan SOC 2 Tipe II',
@@ -441,6 +446,15 @@ const translation = {
       configLoadBalancing: 'Penyeimbangan Beban Konfigurasi',
       addModelCredential: 'Menambahkan kredensial model',
       specifyModelCredential: 'Tentukan kredensial model',
+      addNewModelCredential: 'Menambahkan kredensial model baru',
+      modelCredential: 'Kredensial model',
+      addModel: 'Tambahkan model',
+      removeModel: 'Hapus Model',
+      manageCredentials: 'Kelola Kredensial',
+      selectModelCredential: 'Pilih kredensial model',
+      editModelCredential: 'Mengedit kredensial model',
+      customModelCredentials: 'Kredensial Model Kustom',
+      customModelCredentialsDeleteTip: 'Kredensial sedang digunakan dan tidak dapat dihapus',
     },
     systemModelSettingsLink: 'Mengapa perlu menyiapkan model sistem?',
     apiKey: 'API-KUNCI',
@@ -491,6 +505,8 @@ const translation = {
     installProvider: 'Menginstal penyedia model',
     callTimes: 'Waktu panggilan',
     getFreeTokens: 'Dapatkan Token gratis',
+    parametersInvalidRemoved: 'Beberapa parameter tidak valid dan telah dihapus',
+    installDataSourceProvider: 'Pasang penyedia sumber data',
   },
   dataSource: {
     notion: {
@@ -587,6 +603,7 @@ const translation = {
     settings: 'Pengaturan',
     noRelatedApp: 'Tidak ada aplikasi yang ditautkan',
     viewDoc: 'Lihat dokumentasi',
+    pipeline: 'Pipa',
   },
   voiceInput: {
     speaking: 'Bicaralah sekarang...',
@@ -684,6 +701,7 @@ const translation = {
     pasteFileLinkInvalid: 'Tautan file tidak valid',
     pasteFileLinkInputPlaceholder: 'Masukkan URL...',
     uploadFromComputerReadError: 'Pembacaan file gagal, silakan coba lagi.',
+    fileExtensionBlocked: 'Tipe file ini diblokir karena alasan keamanan',
   },
   tag: {
     noTag: 'Tidak ada tag',
@@ -717,6 +735,9 @@ const translation = {
     dropImageHere: 'Letakkan gambar Anda di sini, atau',
   },
   you: 'Kamu',
+  label: {
+    optional: '(opsional)',
+  },
 }
 
 export default translation

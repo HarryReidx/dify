@@ -8,6 +8,7 @@ export enum PluginType {
   model = 'model',
   extension = 'extension',
   agent = 'agent-strategy',
+  datasource = 'datasource',
 }
 
 export enum PluginSource {
@@ -75,7 +76,8 @@ export type PluginDeclaration = {
   plugins: any // useless in frontend
   verified: boolean
   endpoint: PluginEndpointDeclaration
-  tool: PluginToolDeclaration
+  tool?: PluginToolDeclaration
+  datasource?: PluginToolDeclaration
   model: any
   tags: string[]
   agent_strategy: any
@@ -278,6 +280,12 @@ export type InstallPackageResponse = {
 }
 
 export type InstallStatusResponse = {
+  status: TaskStatus,
+  taskId: string,
+  uniqueIdentifier: string,
+}
+
+export type InstallStatus = {
   success: boolean,
   isFromMarketPlace?: boolean
 }

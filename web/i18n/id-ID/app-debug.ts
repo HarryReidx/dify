@@ -325,7 +325,6 @@ const translation = {
   variableTable: {
     action: 'Tindakan',
     typeString: 'String',
-    optional: 'Fakultatif',
     typeSelect: 'Pilih',
     type: 'Jenis Masukan',
     key: 'Kunci Variabel',
@@ -396,6 +395,19 @@ const translation = {
     'maxNumberOfUploads': 'Jumlah upload maksimal',
     'both': 'Keduanya',
     'uploadFileTypes': 'Unggah Jenis File',
+    'unit': 'Satuan',
+    'startChecked': 'Mulai diperiksa',
+    'placeholder': 'Placeholder',
+    'uploadMethod': 'Metode Unggah',
+    'noDefaultSelected': 'Jangan pilih',
+    'defaultValuePlaceholder': 'Masukkan nilai default untuk mengisi kolom sebelumnya',
+    'showAllSettings': 'Tampilkan Semua Pengaturan',
+    'tooltips': 'Tooltip',
+    'displayName': 'Nama Tampilan',
+    'tooltipsPlaceholder': 'Masukkan teks bermanfaat yang ditampilkan saat mengarahkan kursor ke label',
+    'startSelectedOption': 'Mulai opsi yang dipilih',
+    'unitPlaceholder': 'Tampilkan unit setelah angka, misalnya token',
+    'placeholderPlaceholder': 'Masukkan teks untuk ditampilkan saat bidang kosong',
   },
   vision: {
     visionSettings: {

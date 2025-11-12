@@ -1,0 +1,43 @@
+# Enhanced Document Processing Plugin Dependencies
+
+# Core dependencies
+Pillow>=10.0.0  # Image processing
+minio>=7.1.0    # MinIO client for image storage
+python-magic>=0.4.27  # File type detection
+
+# Document conversion dependencies
+python-docx>=0.8.11  # Word document processing
+openpyxl>=3.1.0      # Excel file processing
+python-pptx>=0.6.21  # PowerPoint processing
+pypdf>=3.0.0         # PDF processing
+pypdfium2>=4.0.0     # PDF rendering and extraction
+
+# Alternative conversion libraries (pure Python)
+docx2pdf>=0.1.8      # Word to PDF conversion (Windows only)
+xlsxwriter>=3.1.0    # Excel file creation
+reportlab>=4.0.0     # PDF generation from scratch
+weasyprint>=59.0     # HTML/CSS to PDF conversion
+pandocfilters>=1.5.0 # Pandoc integration (if pandoc available)
+
+# Image processing and extraction
+pdf2image>=1.16.0    # PDF to image conversion
+pytesseract>=0.3.10  # OCR capabilities (optional)
+
+# Markdown processing
+markdown>=3.4.0      # Markdown parsing and generation
+python-markdown-math>=0.8  # Math support in markdown
+
+# HTTP client for API calls
+requests>=2.31.0     # HTTP requests
+httpx>=0.24.0        # Async HTTP client
+
+# Utilities
+python-dotenv>=1.0.0  # Environment variable management
+pydantic>=2.0.0      # Data validation
+typing-extensions>=4.7.0  # Type hints support
+
+# Optional dependencies for advanced features
+# Uncomment if needed:
+# transformers>=4.30.0  # For AI-powered question generation
+# torch>=2.0.0          # PyTorch for ML models
+# sentence-transformers>=2.2.0  # For semantic similarity

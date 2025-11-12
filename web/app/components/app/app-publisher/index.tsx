@@ -18,7 +18,7 @@ import {
   RiVerifiedBadgeLine,
 } from '@remixicon/react'
 import { useKeyPress } from 'ahooks'
-import { getKeyboardKeyCodeBySystem } from '../../workflow/utils'
+import { getKeyboardKeyCodeBySystem, getKeyboardKeyNameBySystem } from '../../workflow/utils'
 import Toast from '../../base/toast'
 import type { ModelAndParameter } from '../configuration/debug/types'
 import Divider from '../../base/divider'
@@ -44,7 +44,7 @@ import { appDefaultIconBackground } from '@/config'
 import type { PublishWorkflowParams } from '@/types/workflow'
 import { useAppWhiteListSubjects, useGetUserCanAccessApp } from '@/service/access-control'
 import { AccessMode } from '@/models/access-control'
-import { fetchAppDetail } from '@/service/apps'
+import { fetchAppDetailDirect } from '@/service/apps'
 import { useGlobalPublicStore } from '@/context/global-public-context'
 import { useFormatTimeFromNow } from '@/hooks/use-format-time-from-now'
 
@@ -66,7 +66,7 @@ export type AppPublisherProps = {
   onRefreshData?: () => void
 }
 
-const PUBLISH_SHORTCUT = ['⌘', '⇧', 'P']
+const PUBLISH_SHORTCUT = ['ctrl', '⇧', 'P']
 
 const AppPublisher = ({
   disabled = false,
@@ -162,11 +162,16 @@ const AppPublisher = ({
     }
   }, [appDetail?.id])
 
-  const handleAccessControlUpdate = useCallback(() => {
-    fetchAppDetail({ url: '/apps', id: appDetail!.id }).then((res) => {
+  const handleAccessControlUpdate = useCallback(async () => {
+    if (!appDetail)
+      return
+    try {
+      const res = await fetchAppDetailDirect({ url: '/apps', id: appDetail.id })
       setAppDetail(res)
+    }
+    finally {
       setShowAppAccessControl(false)
-    })
+    }
   }, [appDetail, setAppDetail])
 
   const [embeddingModalOpen, setEmbeddingModalOpen] = useState(false)
@@ -250,7 +255,7 @@ const AppPublisher = ({
                             <div className='flex gap-0.5'>
                               {PUBLISH_SHORTCUT.map(key => (
                                 <span key={key} className='system-kbd h-4 w-4 rounded-[4px] bg-components-kbd-bg-white text-text-primary-on-surface'>
-                                  {key}
+                                  {getKeyboardKeyNameBySystem(key)}
                                 </span>
                               ))}
                             </div>
@@ -348,7 +353,8 @@ const AppPublisher = ({
                     <SuggestedAction
                       className='flex-1'
                       onClick={() => {
-                        publishedAt && handleOpenInExplore()
+                        if (publishedAt)
+                          handleOpenInExplore()
                       }}
                       disabled={!publishedAt || (systemFeatures.webapp_auth.enabled && !userCanAccessApp?.result)}
                       icon={<RiPlanetLine className='h-4 w-4' />}

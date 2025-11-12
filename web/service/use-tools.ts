@@ -4,9 +4,11 @@ import type {
   MCPServerDetail,
   Tool,
 } from '@/app/components/tools/types'
-import type { ToolWithProvider } from '@/app/components/workflow/types'
+import { CollectionType } from '@/app/components/tools/types'
+import type { RAGRecommendedPlugins, ToolWithProvider } from '@/app/components/workflow/types'
 import type { AppIconType } from '@/types/app'
 import { useInvalid } from './use-base'
+import type { QueryKey } from '@tanstack/react-query'
 import {
   useMutation,
   useQuery,
@@ -76,6 +78,16 @@ export const useInvalidateAllMCPTools = () => {
   return useInvalid(useAllMCPToolsKey)
 }
 
+const useInvalidToolsKeyMap: Record<string, QueryKey> = {
+  [CollectionType.builtIn]: useAllBuiltInToolsKey,
+  [CollectionType.custom]: useAllCustomToolsKey,
+  [CollectionType.workflow]: useAllWorkflowToolsKey,
+  [CollectionType.mcp]: useAllMCPToolsKey,
+}
+export const useInvalidToolsByType = (type: CollectionType | string) => {
+  return useInvalid(useInvalidToolsKeyMap[type])
+}
+
 export const useCreateMCP = () => {
   return useMutation({
     mutationKey: [NAME_SPACE, 'create-mcp'],
@@ -85,6 +97,9 @@ export const useCreateMCP = () => {
       icon_type: AppIconType
       icon: string
       icon_background?: string | null
+      timeout?: number
+      sse_read_timeout?: number
+      headers?: Record<string, string>
     }) => {
       return post<ToolWithProvider>('workspaces/current/tool-provider/mcp', {
         body: {
@@ -109,6 +124,9 @@ export const useUpdateMCP = ({
       icon: string
       icon_background?: string | null
       provider_id: string
+      timeout?: number
+      sse_read_timeout?: number
+      headers?: Record<string, string>
     }) => {
       return put('workspaces/current/tool-provider/mcp', {
         body: {
@@ -268,6 +286,7 @@ export const useInvalidateBuiltinProviderInfo = () => {
 
 export const useBuiltinTools = (providerName: string) => {
   return useQuery({
+    enabled: !!providerName,
     queryKey: [NAME_SPACE, 'builtin-provider-tools', providerName],
     queryFn: () => get<Tool[]>(`/workspaces/current/tool-provider/builtin/${providerName}/tools`),
   })
@@ -306,4 +325,17 @@ export const useRemoveProviderCredentials = ({
     },
     onSuccess,
   })
+}
+
+const useRAGRecommendedPluginListKey = [NAME_SPACE, 'rag-recommended-plugins']
+
+export const useRAGRecommendedPlugins = () => {
+  return useQuery<RAGRecommendedPlugins>({
+    queryKey: useRAGRecommendedPluginListKey,
+    queryFn: () => get<RAGRecommendedPlugins>('/rag/pipelines/recommended-plugins'),
+  })
+}
+
+export const useInvalidateRAGRecommendedPlugins = () => {
+  return useInvalid(useRAGRecommendedPluginListKey)
 }
