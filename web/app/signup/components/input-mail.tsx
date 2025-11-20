@@ -87,13 +87,13 @@ export default function Form({
         <Link
           className='system-xs-medium text-text-secondary hover:underline'
           target='_blank' rel='noopener noreferrer'
-          href='https://dify.ai/terms'
+          href='https://tsingyun.yuque.com/yg70ks/pd1szw/awlc7dl1z53shcpx'
         >{t('login.tos')}</Link>
               &nbsp;&&nbsp;
         <Link
           className='system-xs-medium text-text-secondary hover:underline'
           target='_blank' rel='noopener noreferrer'
-          href='https://dify.ai/privacy'
+          href='https://tsingyun.yuque.com/yg70ks/pd1szw/awlc7dl1z53shcpx'
         >{t('login.pp')}</Link>
       </div>
     </>}

@@ -1427,7 +1427,7 @@ services:
   ## function tool
   ## 试卷生成工具
   quiz-flask-service:
-    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.8.1
+    image: registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify:quiz-flask-service-1.9.2
     build: ./quiz-flask-service
     container_name: quiz-flask-service
     restart: always
@@ -1446,71 +1446,74 @@ services:
     security_opt:
       - seccomp=unconfined
 
-
-  mineru-sglang-server:
-    image: mineru-sglang:latest
-    container_name: mineru-sglang-server
+  # ============================================================================
+  # MinerU vLLM Inference Server
+  # ============================================================================
+  mineru-vllm-server:
+    image: mineru-vllm:2.5.4
+    container_name: mineru-vllm-server
     restart: always
-    #    profiles: ["sglang-server"]
+    profiles: ["api"]
     ports:
-      - 30000:30000
+      - "30000:30000"
     environment:
-      MINERU_MODEL_SOURCE: local
-    entrypoint: mineru-sglang-server
+      MINERU_MODEL_SOURCE: modelscope
+      MINERU_MODEL_ID: OpenDataLab/MinerU2.5-2509-1.2B
+      # 如使用私有模型或需要认证，可启用以下 token
+      # HUGGING_FACE_HUB_TOKEN: "your_token"
+    #   MS_HUB_TOKEN: "ms-0fcc8432-5824-416f-aa7b-6aeeab4f2410"
+    volumes:
+      - /data/huangx/model:/app/models/modelscope
+      - /data/huangx/model/modelscope:/root/.cache/modelscope
+      # - ~/.cache/huggingface:/root/.cache/huggingface
+      # 如模型已预下载，可挂载路径：
+      # - /data/models:/app/models
+    entrypoint: mineru-vllm-server
     command:
       --host 0.0.0.0
-      --port 30000
-      --mem-fraction-static 0.4
-      --tp-size 2
-      --dp-size 2
-      # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
-      # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-    # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
-    # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+      --port 8000
+      --data-parallel-size 2
+      # 可选：控制最大 batch size / 并发等
+      # - --data-parallel-size 2
+      # If using multiple GPUs, increase throughput using vllm's multi-GPU parallel mode
+      # --gpu-memory-utilization 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
       memlock: -1
       stack: 67108864
     ipc: host
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
-    networks:
-      - default
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0", "1"]
+              device_ids: ["0"]
               capabilities: [gpu]
-    # deploy:                              # GPU 资源配置
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all                 # 使用所有 GPU
-    #           capabilities: [gpu]
 
+  # ============================================================================
+  # MinerU Web API Service
+  # ============================================================================
   mineru-api:
-    image: mineru-sglang:latest
+    image: mineru-vllm:2.5.4
     container_name: mineru-api
     restart: always
-    #    profiles: ["api"]
+    profiles: ["api"]
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       MINERU_MODEL_SOURCE: local
+      VLLM_SERVER_URL: http://mineru-vllm-server:30000
     entrypoint: mineru-api
     command:
-      --host 0.0.0.0
-      --port 8000
-      --mem-fraction-static 0.4
-      --tp-size 2
-      --dp-size 2
-      # parameters for sglang-engine
-      # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
-      # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-    # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
-    # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
     ulimits:
       memlock: -1
       stack: 67108864
@@ -1522,12 +1525,158 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0", "1"]
-              capabilities: [gpu]
-    # deploy:                              # API 不需要 GPU
-    #   resources:
-    #     reservations:
-    #       devices: []
+              device_ids: [ "0" ]
+              capabilities: [ gpu ]
+
+
+  # ===============================================
+  # 新增：Markdown Tool 服务 (确保 context 路径正确)
+  # ===============================================
+#  markdown-tool:
+#    # # 指向 Tool 文件夹和 Dockerfile
+#    # build:
+#    #   context: ./dify-markdown-tool
+#    #   dockerfile: Dockerfile.tool
+#    # container_name: dify_markdown_tool
+#    # # 确保它连接到 Dify 的内部网络。如果 Dify 使用自定义网络名，请在此处替换
+#    # networks:
+#    #   - default # 或者 dify 的网络名
+#    # # 容器内端口 8080，无需映射到宿主机，因为 Dify API 直接访问它
+#    # restart: always
+#    build:
+#      context: ./plugins/string-to-md
+#      dockerfile: Dockerfile.tool
+#    container_name: dify_markdown_tool
+#    networks:
+#      - default
+#    restart: always
+#    volumes:
+#      - ./plugins/string-to-md:/app
+#    environment:
+#      - PLUGIN_NAME=string_to_md
+
+  # ============================================================================
+  # MinerU Gradio WebUI
+  # ============================================================================
+#   mineru-gradio:
+#     image: mineru-vllm:2.5.4
+#     container_name: mineru-gradio
+#     restart: always
+#     profiles: ["gradio"]
+#     ports:
+#       - "7860:7860"
+#     environment:
+#       MINERU_MODEL_SOURCE: local
+#       VLLM_SERVER_URL: http://mineru-vllm-server:30000
+#     entrypoint: mineru-gradio
+#     command:
+#       --server-name 0.0.0.0
+#       --server-port 7860
+#       --enable-vllm-engine true
+#       # 可选：禁用内置 API，限制转换页数等
+#       # --enable-api false
+#       # --max-convert-pages 20
+#     ulimits:
+#       memlock: -1
+#       stack: 67108864
+#     ipc: host
+#     depends_on:
+#       mineru-vllm-server:
+#         condition: service_healthy
+
+
+# ### 老版本 2.1.10
+#   mineru-sglang-server:
+#     image: mineru-sglang:latest
+#     container_name: mineru-sglang-server
+#     restart: always
+# #    profiles: ["sglang-server"]
+#     ports:
+#       - 30000:30000
+#     environment:
+#       MINERU_MODEL_SOURCE: local
+#     entrypoint: mineru-sglang-server
+#     command:
+#       --host 0.0.0.0
+#       --port 30000
+#       --mem-fraction-static 0.6
+#       --tp-size 1
+#       --dp-size 1
+#       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
+#       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
+#       # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+#     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+#     ulimits:
+#       memlock: -1
+#       stack: 67108864
+#     ipc: host
+#     shm_size: 32g
+#     gpus: all
+#     healthcheck:
+#       test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
+
+
+#     # ulimits:
+#     #   memlock: -1
+#     #   stack: 67108864
+#     # ipc: host
+#     # healthcheck:
+#     #   test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
+#     # networks:
+#     #   - default
+#     # deploy:
+#     #   resources:
+#     #     reservations:
+#     #       devices:
+#     #         - driver: nvidia
+#     #           device_ids: ["0", "1"]
+#     #           capabilities: [gpu]
+#     # deploy:                              # GPU 资源配置
+#     #   resources:
+#     #     reservations:
+#     #       devices:
+#     #         - driver: nvidia
+#     #           count: all                 # 使用所有 GPU
+#     #           capabilities: [gpu]
+
+#   mineru-api:
+#     image: mineru-sglang:latest
+#     container_name: mineru-api
+#     restart: always
+# #    profiles: ["api"]
+#     ports:
+#       - 8000:8000
+#     environment:
+#       MINERU_MODEL_SOURCE: local
+#     entrypoint: mineru-api
+#     command:
+#       --host 0.0.0.0
+#       --port 8000
+#       --mem-fraction-static 0.4
+#       --tp-size 2
+#       --dp-size 2
+#       # parameters for sglang-engine
+#       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
+#       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
+#       # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
+#     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+#     ulimits:
+#       memlock: -1
+#       stack: 67108864
+#     ipc: host
+#     networks:
+#       - default
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               device_ids: ["0", "1"]
+#               capabilities: [gpu]
+#     # deploy:                              # API 不需要 GPU
+#     #   resources:
+#     #     reservations:
+#     #       devices: []
 
 # ================================
 # 网络配置 (Network Configuration)

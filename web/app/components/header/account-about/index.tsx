@@ -49,8 +49,8 @@ export default function AccountAbout({
             {/*    IS_CE_EDITION */}
             {/*      ? <Link href={'https://github.com/langgenius/dify/blob/main/LICENSE'} target='_blank' rel='noopener noreferrer'>Open Source License</Link> */}
             {/*      : <> */}
-            {/*        <Link href='https://dify.ai/privacy' target='_blank' rel='noopener noreferrer'>Privacy Policy</Link>,&nbsp; */}
-            {/*        <Link href='https://dify.ai/terms' target='_blank' rel='noopener noreferrer'>Terms of Service</Link> */}
+            {/*        <Link href='https://tsingyun.yuque.com/yg70ks/pd1szw/awlc7dl1z53shcpx' target='_blank' rel='noopener noreferrer'>Privacy Policy</Link>,&nbsp; */}
+            {/*        <Link href='https://tsingyun.yuque.com/yg70ks/pd1szw/awlc7dl1z53shcpx' target='_blank' rel='noopener noreferrer'>Terms of Service</Link> */}
             {/*      </> */}
             {/*  } */}
             {/* </div> */}
