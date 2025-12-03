@@ -830,7 +830,7 @@ services:
 
   # plugin daemon
   plugin_daemon:
-    image: langgenius/dify-plugin-daemon:0.3.3-local
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/langgenius/dify-plugin-daemon:0.3.3-local
     restart: always
     environment:
       # Use the shared environment variables.
@@ -950,6 +950,7 @@ services:
       - /data/huangx/docker/volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
       - /data/huangx/docker/volumes/certbot/conf:/etc/letsencrypt
       - /data/huangx/docker/volumes/certbot/www:/var/www/html
+      - ./volumes/mineru-output:/var/mineru/output:ro
     entrypoint:
       [
         "sh",
@@ -979,6 +980,7 @@ services:
     ports:
       - "${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}"
       - "${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}"
+      - "8002:8002"
 
   # The Weaviate vector store.
   weaviate:
@@ -1177,7 +1179,7 @@ services:
       - oracle
     restart: always
     volumes:
-      - source: oradata
+      - source: ai_flow_oradata
         type: volume
         target: /opt/oracle/oradata
       - ./startupscripts:/opt/oracle/scripts/startup
@@ -1361,7 +1363,7 @@ services:
     restart: always
     volumes:
       - ./elasticsearch/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-      - dify_es01_data:/usr/share/elasticsearch/data
+      - ai_flow_es_data:/usr/share/elasticsearch/data
     environment:
       ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD:-elastic}
       VECTOR_STORE: ${VECTOR_STORE:-}
@@ -1453,7 +1455,7 @@ services:
     image: mineru-vllm:2.5.4
     container_name: mineru-vllm-server
     restart: always
-    profiles: ["api"]
+    # profiles: ["vllm-server"]
     ports:
       - "30000:30000"
     environment:
@@ -1475,8 +1477,8 @@ services:
       --data-parallel-size 2
       # 可选：控制最大 batch size / 并发等
       # - --data-parallel-size 2
-      # If using multiple GPUs, increase throughput using vllm's multi-GPU parallel mode
-      # --gpu-memory-utilization 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
+    # If using multiple GPUs, increase throughput using vllm's multi-GPU parallel mode
+    # --gpu-memory-utilization 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
       memlock: -1
       stack: 67108864
@@ -1492,7 +1494,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0"]
+              device_ids: ["0","1"]
               capabilities: [gpu]
 
   # ============================================================================
@@ -1502,7 +1504,7 @@ services:
     image: mineru-vllm:2.5.4
     container_name: mineru-api
     restart: always
-    profiles: ["api"]
+    # profiles: ["api"]
     ports:
       - "8000:8000"
     environment:
@@ -1520,6 +1522,8 @@ services:
     ipc: host
     networks:
       - default
+    volumes:
+      - ./volumes/mineru-output:/vllm-workspace/output
     deploy:
       resources:
         reservations:
@@ -1531,29 +1535,29 @@ services:
 
   # ===============================================
   # 新增：Markdown Tool 服务 (确保 context 路径正确)
-  # ===============================================
-#  markdown-tool:
-#    # # 指向 Tool 文件夹和 Dockerfile
-#    # build:
-#    #   context: ./dify-markdown-tool
-#    #   dockerfile: Dockerfile.tool
-#    # container_name: dify_markdown_tool
-#    # # 确保它连接到 Dify 的内部网络。如果 Dify 使用自定义网络名，请在此处替换
-#    # networks:
-#    #   - default # 或者 dify 的网络名
-#    # # 容器内端口 8080，无需映射到宿主机，因为 Dify API 直接访问它
-#    # restart: always
-#    build:
-#      context: ./plugins/string-to-md
-#      dockerfile: Dockerfile.tool
-#    container_name: dify_markdown_tool
-#    networks:
-#      - default
-#    restart: always
-#    volumes:
-#      - ./plugins/string-to-md:/app
-#    environment:
-#      - PLUGIN_NAME=string_to_md
+  # # ===============================================
+  # markdown-tool:
+  #   # # 指向 Tool 文件夹和 Dockerfile
+  #   # build:
+  #   #   context: ./dify-markdown-tool
+  #   #   dockerfile: Dockerfile.tool
+  #   # container_name: dify_markdown_tool
+  #   # # 确保它连接到 Dify 的内部网络。如果 Dify 使用自定义网络名，请在此处替换
+  #   # networks:
+  #   #   - default # 或者 dify 的网络名
+  #   # # 容器内端口 8080，无需映射到宿主机，因为 Dify API 直接访问它
+  #   # restart: always
+  #   build:
+  #     context: ./plugins/string-to-md
+  #     dockerfile: Dockerfile.tool
+  #   container_name: dify_markdown_tool
+  #   networks:
+  #     - default
+  #   restart: always
+  #   volumes:
+  #     - ./plugins/string-to-md:/app
+  #   environment:
+  #     - PLUGIN_NAME=string_to_md
 
   # ============================================================================
   # MinerU Gradio WebUI
@@ -1708,11 +1712,11 @@ volumes:
   ai_flow_oradata:
 
   # Elasticsearch 数据卷
-  al_flow_es01_data:
+  ai_flow_es_data:
 
   # 插件卷
   ai_flow_plugin:
     driver: local
 
   # 向量库 vector_weaviate
-  al_flow_vector_weaviate:
+  ai_flow_vector_weaviate:
