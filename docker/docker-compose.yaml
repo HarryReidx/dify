@@ -1489,12 +1489,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    shm_size: '16gb'  # 设置为显存大小的一半或更多，TITAN RTX 24G建议给16G以上
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0","1"]
+              #   device_ids: ["0","1"]
+              count: all
               capabilities: [gpu]
 
   # ============================================================================
@@ -1529,7 +1531,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: [ "0" ]
+              device_ids: ["0","1"]
               capabilities: [ gpu ]
 
 
