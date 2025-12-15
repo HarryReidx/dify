@@ -65,6 +65,12 @@ const translation = {
     deleteConfirmTitle: 'حذف شود؟',
     yes: 'بله',
     confirmAction: 'لطفاً اقدام خود را تأیید کنید.',
+    noSearchResults: 'هیچ {{content}} یافت نشد',
+    resetKeywords: 'بازنشانی کلمات کلیدی',
+    selectCount: '{{count}} انتخاب شد',
+    searchCount: 'یافتن {{count}} {{content}}',
+    noSearchCount: '0 {{content}}',
+    now: 'الان',
   },
   errorMsg: {
     fieldRequired: '{{field}} الزامی است',
@@ -73,6 +79,7 @@ const translation = {
   placeholder: {
     input: 'لطفا وارد کنید',
     select: 'لطفا انتخاب کنید',
+    search: 'جستجو...',
   },
   voice: {
     language: {
@@ -727,6 +734,7 @@ const translation = {
     pasteFileLink: 'پیوند فایل را جایگذاری کنید',
     uploadFromComputerLimit: 'آپلود فایل نمی تواند از {{size}} تجاوز کند',
     fileExtensionBlocked: 'این نوع فایل به دلایل امنیتی مسدود شده است',
+    uploadDisabled: 'بارگذاری فایل غیرفعال است',
   },
   license: {
     expiring_plural: 'انقضا در {{count}} روز',
@@ -768,6 +776,13 @@ const translation = {
   },
   label: {
     optional: '(اختیاری)',
+  },
+  noData: 'بدون داده',
+  dynamicSelect: {
+    error: 'بارگیری گزینه‌ها ناموفق بود',
+    noData: 'هیچ گزینه‌ای در دسترس نیست',
+    loading: 'در حال بارگذاری گزینه‌ها...',
+    selected: '{{count}} انتخاب شد',
   },
 }
 

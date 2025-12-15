@@ -26,10 +26,21 @@ export const getFileUploadErrorMessage = (error: any, defaultMessage: string, t:
   return defaultMessage
 }
 
+type FileUploadResponse = {
+  created_at: number
+  created_by: string
+  extension: string
+  id: string
+  mime_type: string
+  name: string
+  preview_url: string | null
+  size: number
+  source_url: string
+}
 type FileUploadParams = {
   file: File
   onProgressCallback: (progress: number) => void
-  onSuccessCallback: (res: { id: string }) => void
+  onSuccessCallback: (res: FileUploadResponse) => void
   onErrorCallback: (error?: any) => void
 }
 type FileUpload = (v: FileUploadParams, isPublic?: boolean, url?: string) => void
@@ -53,8 +64,8 @@ export const fileUpload: FileUpload = ({
     data: formData,
     onprogress: onProgress,
   }, isPublic, url)
-    .then((res: { id: string }) => {
-      onSuccessCallback(res)
+    .then((res) => {
+      onSuccessCallback(res as FileUploadResponse)
     })
     .catch((error) => {
       onErrorCallback(error)
@@ -89,10 +100,13 @@ export const getFileExtension = (fileName: string, fileMimetype: string, isRemot
     }
   }
   if (!extension) {
-    if (extensions.size > 0)
-      extension = extensions.values().next().value.toLowerCase()
-    else
+    if (extensions.size > 0) {
+      const firstExtension = extensions.values().next().value
+      extension = firstExtension ? firstExtension.toLowerCase() : ''
+    }
+    else {
       extension = extensionInFileName
+    }
   }
 
   if (isRemote)
@@ -164,6 +178,19 @@ export const getProcessedFiles = (files: FileEntity[]) => {
 
 export const getProcessedFilesFromResponse = (files: FileResponse[]) => {
   return files.map((fileItem) => {
+    let supportFileType = fileItem.type
+
+    if (fileItem.filename && fileItem.mime_type) {
+      const detectedTypeFromFileName = getSupportFileType(fileItem.filename, '')
+      const detectedTypeFromMime = getSupportFileType('', fileItem.mime_type)
+
+      if (detectedTypeFromFileName
+        && detectedTypeFromMime
+        && detectedTypeFromFileName === detectedTypeFromMime
+        && detectedTypeFromFileName !== fileItem.type)
+        supportFileType = detectedTypeFromFileName
+    }
+
     return {
       id: fileItem.related_id,
       name: fileItem.filename,
@@ -171,7 +198,7 @@ export const getProcessedFilesFromResponse = (files: FileResponse[]) => {
       type: fileItem.mime_type,
       progress: 100,
       transferMethod: fileItem.transfer_method,
-      supportFileType: fileItem.type,
+      supportFileType,
       uploadedId: fileItem.upload_file_id || fileItem.related_id,
       url: fileItem.url || fileItem.remote_url,
     }
