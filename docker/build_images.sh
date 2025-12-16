@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================================================
-# Docker镜像拉取脚本 - TsingYun Baseline
+# Docker镜像构建脚本 - TsingYun Baseline
 # ============================================================================
 
 # 版本配置 - 统一管理所有镜像版本
@@ -11,7 +11,7 @@ VERSION="1.11.1"
 REGISTRY="registry.cn-beijing.aliyuncs.com/tsingyun_baseline/ty-dify"
 
 # 日志配置
-LOG_DIR="./pull_logs"
+LOG_DIR="./build_logs"
 SUCCESS_LOG="$LOG_DIR/success.log"
 FAILED_LOG="$LOG_DIR/failed.log"
 SUMMARY_LOG="$LOG_DIR/summary.log"
@@ -54,20 +54,36 @@ log_warning() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARNING] $1" >> "$SUMMARY_LOG"
 }
 
-# 拉取单个镜像的函数
-pull_image() {
+# 构建单个镜像的函数
+build_image() {
     local name="$1"
+    local context="$2"
+    local dockerfile="$3"
     local target_image="$REGISTRY:${name}-${VERSION}"
 
-    log_info "开始拉取镜像: $name"
+    log_info "开始构建镜像: $name"
+    log_info "构建上下文: $context"
+    log_info "Dockerfile: $dockerfile"
+    log_info "目标镜像: $target_image"
 
-    # 拉取镜像
-    log_info "拉取中: $target_image"
-    if docker pull "$target_image" 2>&1 | tee -a "$SUMMARY_LOG"; then
-        log_success "拉取成功: $target_image"
+    # 检查构建上下文是否存在
+    if [ ! -d "$context" ]; then
+        log_error "构建上下文不存在: $context"
+        return 1
+    fi
+
+    # 检查Dockerfile是否存在
+    if [ ! -f "$context/$dockerfile" ]; then
+        log_error "Dockerfile不存在: $context/$dockerfile"
+        return 1
+    fi
+
+    # 构建镜像
+    if docker build -t "$target_image" -f "$context/$dockerfile" "$context" 2>&1 | tee -a "$SUMMARY_LOG"; then
+        log_success "构建成功: $target_image"
         return 0
     else
-        log_error "拉取失败: $target_image"
+        log_error "构建失败: $target_image"
         return 1
     fi
 }
@@ -75,7 +91,7 @@ pull_image() {
 # 主函数
 main() {
     log_info "============================================"
-    log_info "开始拉取 TsingYun Dify 镜像从阿里云仓库"
+    log_info "开始构建 TsingYun Dify 镜像"
     log_info "============================================"
     log_info "版本: $VERSION"
     log_info "仓库: $REGISTRY"
@@ -89,34 +105,34 @@ main() {
     local success_count=0
     local failed_count=0
 
-    # 拉取 API 镜像
+    # 构建 API 镜像
     log_info ""
     log_info "----------------------------------------"
-    log_info "拉取 Dify API 镜像"
+    log_info "构建 Dify API 镜像"
     log_info "----------------------------------------"
-    if pull_image "dify-api"; then
+    if build_image "dify-api" "../api" "Dockerfile"; then
         ((success_count++))
     else
         ((failed_count++))
     fi
 
-    # 拉取 Web 镜像
+    # 构建 Web 镜像
     log_info ""
     log_info "----------------------------------------"
-    log_info "拉取 Dify Web 镜像"
+    log_info "构建 Dify Web 镜像"
     log_info "----------------------------------------"
-    if pull_image "dify-web"; then
+    if build_image "dify-web" "../web" "Dockerfile"; then
         ((success_count++))
     else
         ((failed_count++))
     fi
 
-    # 拉取 Quiz Flask Service 镜像
+    # 构建 Quiz Flask Service 镜像
     log_info ""
     log_info "----------------------------------------"
-    log_info "拉取 Quiz Flask Service 镜像"
+    log_info "构建 Quiz Flask Service 镜像"
     log_info "----------------------------------------"
-    if pull_image "quiz-flask-service"; then
+    if build_image "quiz-flask-service" "./quiz-flask-service" "Dockerfile"; then
         ((success_count++))
     else
         ((failed_count++))
@@ -127,7 +143,7 @@ main() {
 
     echo ""
     echo "============================================"
-    echo "           拉取任务汇总报告"
+    echo "           构建任务汇总报告"
     echo "============================================"
     echo ""
     echo "📊 统计信息:"
@@ -137,7 +153,7 @@ main() {
     echo ""
 
     if [ $failed_count -gt 0 ]; then
-        echo "❌ 拉取失败的镜像:"
+        echo "❌ 构建失败的镜像:"
         echo ""
         while IFS= read -r line; do
             echo "   • $line"
@@ -146,15 +162,15 @@ main() {
         echo "详细错误日志: $FAILED_LOG"
         echo ""
         echo "============================================"
-        echo "           ❌ 拉取失败"
+        echo "           ❌ 构建失败"
         echo "============================================"
         echo ""
-        echo "脚本将在 3 秒后退出..."
-        sleep 3
+        echo "脚本将在 5 秒后退出..."
+        sleep 5
         exit 1
     fi
 
-    echo "✅ 成功拉取的镜像:"
+    echo "✅ 成功构建的镜像:"
     echo "   • $REGISTRY:dify-api-$VERSION"
     echo "   • $REGISTRY:dify-web-$VERSION"
     echo "   • $REGISTRY:quiz-flask-service-$VERSION"
@@ -164,10 +180,11 @@ main() {
     echo "   • 失败日志: $FAILED_LOG"
     echo "   • 汇总日志: $SUMMARY_LOG"
     echo ""
-    echo "🎉 所有镜像已成功从阿里云仓库拉取！"
+    echo "🚀 下一步操作:"
+    echo "   运行 ./push_images.sh 推送镜像到阿里云仓库"
     echo ""
     echo "============================================"
-    echo "           ✅ 拉取成功完成"
+    echo "           ✅ 构建成功完成"
     echo "============================================"
     echo ""
     echo "脚本将在 3 秒后退出..."

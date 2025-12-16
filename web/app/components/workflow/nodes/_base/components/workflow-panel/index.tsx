@@ -241,7 +241,6 @@ const BasePanel: FC<BasePanelProps> = ({
     singleRunParams,
     nodeInfo,
     setRunInputData,
-    handleStop,
     handleSingleRun,
     handleRunWithParams,
     getExistVarValuesInForms,
