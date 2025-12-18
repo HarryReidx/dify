@@ -56,7 +56,7 @@ x-shared-env: &shared-api-worker-env
   NEXT_PUBLIC_ENABLE_SINGLE_DOLLAR_LATEX: ${NEXT_PUBLIC_ENABLE_SINGLE_DOLLAR_LATEX:-false}
   DB_TYPE: ${DB_TYPE:-postgresql}
   DB_USERNAME: ${DB_USERNAME:-postgres}
-  DB_PASSWORD: ${DB_PASSWORD:-difyai123456}
+  DB_PASSWORD: ${DB_PASSWORD:-TyAdmin@2026}
   DB_HOST: ${DB_HOST:-db_postgres}
   DB_PORT: ${DB_PORT:-5432}
   DB_DATABASE: ${DB_DATABASE:-dify}
@@ -81,7 +81,7 @@ x-shared-env: &shared-api-worker-env
   REDIS_HOST: ${REDIS_HOST:-redis}
   REDIS_PORT: ${REDIS_PORT:-6379}
   REDIS_USERNAME: ${REDIS_USERNAME:-}
-  REDIS_PASSWORD: ${REDIS_PASSWORD:-difyai123456}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-TyAdmin@2026}
   REDIS_USE_SSL: ${REDIS_USE_SSL:-false}
   REDIS_SSL_CERT_REQS: ${REDIS_SSL_CERT_REQS:-CERT_NONE}
   REDIS_SSL_CA_CERTS: ${REDIS_SSL_CA_CERTS:-}
@@ -97,7 +97,7 @@ x-shared-env: &shared-api-worker-env
   REDIS_USE_CLUSTERS: ${REDIS_USE_CLUSTERS:-false}
   REDIS_CLUSTERS: ${REDIS_CLUSTERS:-}
   REDIS_CLUSTERS_PASSWORD: ${REDIS_CLUSTERS_PASSWORD:-}
-  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://:difyai123456@redis:6379/1}
+  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://:TyAdmin@2026@redis:6379/1}
   CELERY_BACKEND: ${CELERY_BACKEND:-redis}
   BROKER_USE_SSL: ${BROKER_USE_SSL:-false}
   CELERY_USE_SENTINEL: ${CELERY_USE_SENTINEL:-false}
@@ -169,7 +169,7 @@ x-shared-env: &shared-api-worker-env
   OCEANBASE_VECTOR_HOST: ${OCEANBASE_VECTOR_HOST:-oceanbase}
   OCEANBASE_VECTOR_PORT: ${OCEANBASE_VECTOR_PORT:-2881}
   OCEANBASE_VECTOR_USER: ${OCEANBASE_VECTOR_USER:-root@test}
-  OCEANBASE_VECTOR_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-difyai123456}
+  OCEANBASE_VECTOR_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026}
   OCEANBASE_VECTOR_DATABASE: ${OCEANBASE_VECTOR_DATABASE:-test}
   OCEANBASE_CLUSTER_NAME: ${OCEANBASE_CLUSTER_NAME:-difyai}
   OCEANBASE_MEMORY_LIMIT: ${OCEANBASE_MEMORY_LIMIT:-6G}
@@ -177,7 +177,7 @@ x-shared-env: &shared-api-worker-env
   OCEANBASE_FULLTEXT_PARSER: ${OCEANBASE_FULLTEXT_PARSER:-ik}
   SEEKDB_MEMORY_LIMIT: ${SEEKDB_MEMORY_LIMIT:-2G}
   QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
-  QDRANT_API_KEY: ${QDRANT_API_KEY:-difyai123456}
+  QDRANT_API_KEY: ${QDRANT_API_KEY:-TyAdmin@2026}
   QDRANT_CLIENT_TIMEOUT: ${QDRANT_CLIENT_TIMEOUT:-20}
   QDRANT_GRPC_ENABLED: ${QDRANT_GRPC_ENABLED:-false}
   QDRANT_GRPC_PORT: ${QDRANT_GRPC_PORT:-6334}
@@ -203,7 +203,7 @@ x-shared-env: &shared-api-worker-env
   PGVECTOR_HOST: ${PGVECTOR_HOST:-pgvector}
   PGVECTOR_PORT: ${PGVECTOR_PORT:-5432}
   PGVECTOR_USER: ${PGVECTOR_USER:-postgres}
-  PGVECTOR_PASSWORD: ${PGVECTOR_PASSWORD:-difyai123456}
+  PGVECTOR_PASSWORD: ${PGVECTOR_PASSWORD:-TyAdmin@2026}
   PGVECTOR_DATABASE: ${PGVECTOR_DATABASE:-dify}
   PGVECTOR_MIN_CONNECTION: ${PGVECTOR_MIN_CONNECTION:-1}
   PGVECTOR_MAX_CONNECTION: ${PGVECTOR_MAX_CONNECTION:-5}
@@ -212,14 +212,14 @@ x-shared-env: &shared-api-worker-env
   VASTBASE_HOST: ${VASTBASE_HOST:-vastbase}
   VASTBASE_PORT: ${VASTBASE_PORT:-5432}
   VASTBASE_USER: ${VASTBASE_USER:-dify}
-  VASTBASE_PASSWORD: ${VASTBASE_PASSWORD:-Difyai123456}
+  VASTBASE_PASSWORD: ${VASTBASE_PASSWORD:-TyAdmin@2026}
   VASTBASE_DATABASE: ${VASTBASE_DATABASE:-dify}
   VASTBASE_MIN_CONNECTION: ${VASTBASE_MIN_CONNECTION:-1}
   VASTBASE_MAX_CONNECTION: ${VASTBASE_MAX_CONNECTION:-5}
   PGVECTO_RS_HOST: ${PGVECTO_RS_HOST:-pgvecto-rs}
   PGVECTO_RS_PORT: ${PGVECTO_RS_PORT:-5432}
   PGVECTO_RS_USER: ${PGVECTO_RS_USER:-postgres}
-  PGVECTO_RS_PASSWORD: ${PGVECTO_RS_PASSWORD:-difyai123456}
+  PGVECTO_RS_PASSWORD: ${PGVECTO_RS_PASSWORD:-TyAdmin@2026}
   PGVECTO_RS_DATABASE: ${PGVECTO_RS_DATABASE:-dify}
   ANALYTICDB_KEY_ID: ${ANALYTICDB_KEY_ID:-your-ak}
   ANALYTICDB_KEY_SECRET: ${ANALYTICDB_KEY_SECRET:-your-sk}
@@ -271,14 +271,14 @@ x-shared-env: &shared-api-worker-env
   ALIBABACLOUD_MYSQL_HOST: ${ALIBABACLOUD_MYSQL_HOST:-127.0.0.1}
   ALIBABACLOUD_MYSQL_PORT: ${ALIBABACLOUD_MYSQL_PORT:-3306}
   ALIBABACLOUD_MYSQL_USER: ${ALIBABACLOUD_MYSQL_USER:-root}
-  ALIBABACLOUD_MYSQL_PASSWORD: ${ALIBABACLOUD_MYSQL_PASSWORD:-difyai123456}
+  ALIBABACLOUD_MYSQL_PASSWORD: ${ALIBABACLOUD_MYSQL_PASSWORD:-TyAdmin@2026}
   ALIBABACLOUD_MYSQL_DATABASE: ${ALIBABACLOUD_MYSQL_DATABASE:-dify}
   ALIBABACLOUD_MYSQL_MAX_CONNECTION: ${ALIBABACLOUD_MYSQL_MAX_CONNECTION:-5}
   ALIBABACLOUD_MYSQL_HNSW_M: ${ALIBABACLOUD_MYSQL_HNSW_M:-6}
   RELYT_HOST: ${RELYT_HOST:-db}
   RELYT_PORT: ${RELYT_PORT:-5432}
   RELYT_USER: ${RELYT_USER:-postgres}
-  RELYT_PASSWORD: ${RELYT_PASSWORD:-difyai123456}
+  RELYT_PASSWORD: ${RELYT_PASSWORD:-TyAdmin@2026}
   RELYT_DATABASE: ${RELYT_DATABASE:-postgres}
   OPENSEARCH_HOST: ${OPENSEARCH_HOST:-opensearch}
   OPENSEARCH_PORT: ${OPENSEARCH_PORT:-9200}
@@ -365,7 +365,7 @@ x-shared-env: &shared-api-worker-env
   IRIS_SUPER_SERVER_PORT: ${IRIS_SUPER_SERVER_PORT:-1972}
   IRIS_WEB_SERVER_PORT: ${IRIS_WEB_SERVER_PORT:-52773}
   IRIS_USER: ${IRIS_USER:-_SYSTEM}
-  IRIS_PASSWORD: ${IRIS_PASSWORD:-Dify@1234}
+  IRIS_PASSWORD: ${IRIS_PASSWORD:-TyAdmin@2026}
   IRIS_DATABASE: ${IRIS_DATABASE:-USER}
   IRIS_SCHEMA: ${IRIS_SCHEMA:-dify}
   IRIS_CONNECTION_URL: ${IRIS_CONNECTION_URL:-}
@@ -495,10 +495,10 @@ x-shared-env: &shared-api-worker-env
   WEAVIATE_ENABLE_TOKENIZER_GSE: ${WEAVIATE_ENABLE_TOKENIZER_GSE:-false}
   WEAVIATE_ENABLE_TOKENIZER_KAGOME_JA: ${WEAVIATE_ENABLE_TOKENIZER_KAGOME_JA:-false}
   WEAVIATE_ENABLE_TOKENIZER_KAGOME_KR: ${WEAVIATE_ENABLE_TOKENIZER_KAGOME_KR:-false}
-  CHROMA_SERVER_AUTHN_CREDENTIALS: ${CHROMA_SERVER_AUTHN_CREDENTIALS:-difyai123456}
+  CHROMA_SERVER_AUTHN_CREDENTIALS: ${CHROMA_SERVER_AUTHN_CREDENTIALS:-TyAdmin@2026}
   CHROMA_SERVER_AUTHN_PROVIDER: ${CHROMA_SERVER_AUTHN_PROVIDER:-chromadb.auth.token_authn.TokenAuthenticationServerProvider}
   CHROMA_IS_PERSISTENT: ${CHROMA_IS_PERSISTENT:-TRUE}
-  ORACLE_PWD: ${ORACLE_PWD:-Dify123456}
+  ORACLE_PWD: ${ORACLE_PWD:-TyAdmin@2026}
   ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET:-AL32UTF8}
   ETCD_AUTO_COMPACTION_MODE: ${ETCD_AUTO_COMPACTION_MODE:-revision}
   ETCD_AUTO_COMPACTION_RETENTION: ${ETCD_AUTO_COMPACTION_RETENTION:-1000}
@@ -510,7 +510,7 @@ x-shared-env: &shared-api-worker-env
   MINIO_ADDRESS: ${MINIO_ADDRESS:-minio:9000}
   MILVUS_AUTHORIZATION_ENABLED: ${MILVUS_AUTHORIZATION_ENABLED:-true}
   PGVECTOR_PGUSER: ${PGVECTOR_PGUSER:-postgres}
-  PGVECTOR_POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-difyai123456}
+  PGVECTOR_POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-TyAdmin@2026}
   PGVECTOR_POSTGRES_DB: ${PGVECTOR_POSTGRES_DB:-dify}
   PGVECTOR_PGDATA: ${PGVECTOR_PGDATA:-/var/lib/postgresql/data/pgdata}
   OPENSEARCH_DISCOVERY_TYPE: ${OPENSEARCH_DISCOVERY_TYPE:-single-node}
@@ -689,6 +689,7 @@ services:
       <<: *shared-api-worker-env
       # Startup mode, 'api' starts the API server.
       MODE: api
+      VECTOR_STORE: ${VECTOR_STORE:-qdrant}
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
@@ -738,6 +739,7 @@ services:
       <<: *shared-api-worker-env
       # Startup mode, 'worker' starts the Celery worker for processing all queues.
       MODE: worker
+      VECTOR_STORE: ${VECTOR_STORE:-qdrant}
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
@@ -844,12 +846,12 @@ services:
   # The PostgreSQL database.
   db_postgres:
     image: postgres:15-alpine
-    profiles:
-      - postgresql
+    # profiles:
+    #   - postgresql
     restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-difyai123456}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-TyAdmin@2026}
       POSTGRES_DB: ${DB_DATABASE:-dify}
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
     ports:
@@ -863,7 +865,7 @@ services:
                -c 'statement_timeout=${POSTGRES_STATEMENT_TIMEOUT:-0}'
                -c 'idle_in_transaction_session_timeout=${POSTGRES_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:-0}'
     volumes:
-      - /data/huangx/docker/volumes/db/data:/var/lib/postgresql/data
+      - ./volumes/db/data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -887,7 +889,7 @@ services:
       - mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-difyai123456}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-TyAdmin@2026}
       MYSQL_DATABASE: ${DB_DATABASE:-dify}
     command: >
       --max_connections=1000
@@ -904,7 +906,7 @@ services:
           "ping",
           "-u",
           "root",
-          "-p${DB_PASSWORD:-difyai123456}",
+          "-p${DB_PASSWORD:-TyAdmin@2026}",
         ]
       interval: 1s
       timeout: 3s
@@ -915,17 +917,17 @@ services:
     image: redis:6-alpine
     restart: always
     environment:
-      REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-TyAdmin@2026}
     volumes:
       # Mount the redis data directory to the container.
-      - /data/huangx/docker/volumes/redis/data:/data
+      - ./volumes/redis/data:/data
     # Set the redis password when startup redis server.
-    command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-TyAdmin@2026}
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "redis-cli -a ${REDIS_PASSWORD:-difyai123456} ping | grep -q PONG",
+          "redis-cli -a ${REDIS_PASSWORD:-TyAdmin@2026} ping | grep -q PONG",
         ]
 
   # The DifySandbox
@@ -948,8 +950,8 @@ services:
     security_opt:
       - seccomp=unconfined
     volumes:
-      - /data/huangx/docker/volumes/sandbox/dependencies:/dependencies
-      - /data/huangx/docker/volumes/sandbox/conf:/conf
+      - ./volumes/sandbox/dependencies:/dependencies
+      - ./volumes/sandbox/conf:/conf
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8194/health"]
     networks:
@@ -1084,9 +1086,9 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/docker-entrypoint.sh:/docker-entrypoint-mount.sh
       - ./nginx/ssl:/etc/ssl # cert dir (legacy)
-      - /data/huangx/docker/volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
-      - /data/huangx/docker/volumes/certbot/conf:/etc/letsencrypt
-      - /data/huangx/docker/volumes/certbot/www:/var/www/html
+      - ./volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
+      - ./volumes/certbot/conf:/etc/letsencrypt
+      - ./volumes/certbot/www:/var/www/html
       - ./volumes/mineru-output:/var/mineru/output:ro
     entrypoint:
       [
@@ -1127,7 +1129,7 @@ services:
     restart: always
     volumes:
       # Mount the Weaviate data directory to the con tainer.
-      - /data/huangx/docker/volumes/weaviate:/var/lib/weaviate
+      - ./volumes/weaviate:/var/lib/weaviate
     environment:
       # The Weaviate configurations
       # You can refer to the [Weaviate](https://weaviate.io/developers/weaviate/config-refs/env-vars) documentation for more information.
@@ -1159,8 +1161,8 @@ services:
       - ./volumes/oceanbase/init.d:/root/boot/init.d
     environment:
       OB_MEMORY_LIMIT: ${OCEANBASE_MEMORY_LIMIT:-6G}
-      OB_SYS_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-difyai123456}
-      OB_TENANT_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-difyai123456}
+      OB_SYS_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026}
+      OB_TENANT_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026}
       OB_CLUSTER_NAME: ${OCEANBASE_CLUSTER_NAME:-difyai}
       OB_SERVER_IP: 127.0.0.1
       MODE: mini
@@ -1171,7 +1173,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          'obclient -h127.0.0.1 -P2881 -uroot@test -p${OCEANBASE_VECTOR_PASSWORD:-difyai123456} -e "SELECT 1;"',
+          'obclient -h127.0.0.1 -P2881 -uroot@test -p${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026} -e "SELECT 1;"',
         ]
       interval: 10s
       retries: 30
@@ -1188,7 +1190,7 @@ services:
     volumes:
       - ./volumes/seekdb:/var/lib/oceanbase
     environment:
-      ROOT_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-difyai123456}
+      ROOT_PASSWORD: ${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026}
       MEMORY_LIMIT: ${SEEKDB_MEMORY_LIMIT:-2G}
       REPORTER: dify-ai-seekdb
     ports:
@@ -1197,7 +1199,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          'mysql -h127.0.0.1 -P2881 -uroot -p${OCEANBASE_VECTOR_PASSWORD:-difyai123456} -e "SELECT 1;"',
+          'mysql -h127.0.0.1 -P2881 -uroot -p${OCEANBASE_VECTOR_PASSWORD:-TyAdmin@2026} -e "SELECT 1;"',
         ]
       interval: 5s
       retries: 60
@@ -1207,13 +1209,28 @@ services:
   # (if used, you need to set VECTOR_STORE to qdrant in the api & worker service.)
   qdrant:
     image: langgenius/qdrant:v1.8.3
-    profiles:
-      - qdrant
+    # profiles:
+    #   - qdrant
     restart: always
     volumes:
       - ./volumes/qdrant:/qdrant/storage
+    ports:
+      - "6333:6333" # HTTP API
+      - "6334:6334" # gRPC API (Dify 优先使用这个提高性能)
     environment:
-      QDRANT_API_KEY: ${QDRANT_API_KEY:-difyai123456}
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-TyAdmin@2026}
+      # 生产环境建议开启 gRPC
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      # 限制最大连接数，防止 OOM
+      QDRANT__SERVICE__MAX_REQUEST_SIZE_MB: 256
+      # 优化索引建议：根据你的 CPU 核心数调整
+      QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS: 8
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    networks:
+      - default
 
   # The Couchbase vector store.
   couchbase-server:
@@ -1261,7 +1278,7 @@ services:
     environment:
       PGUSER: ${PGVECTOR_PGUSER:-postgres}
       # The password for the default postgres user.
-      POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-difyai123456}
+      POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-TyAdmin@2026}
       # The name of the default postgres database.
       POSTGRES_DB: ${PGVECTOR_POSTGRES_DB:-dify}
       # postgres data directory
@@ -1289,7 +1306,7 @@ services:
       - VB_DBCOMPATIBILITY=PG
       - VB_DB=dify
       - VB_USERNAME=dify
-      - VB_PASSWORD=Difyai123456
+      - VB_PASSWORD=TyAdmin@2026
     ports:
       - "5434:5432"
     volumes:
@@ -1312,7 +1329,7 @@ services:
     environment:
       PGUSER: ${PGVECTOR_PGUSER:-postgres}
       # The password for the default postgres user.
-      POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-difyai123456}
+      POSTGRES_PASSWORD: ${PGVECTOR_POSTGRES_PASSWORD:-TyAdmin@2026}
       # The name of the default postgres database.
       POSTGRES_DB: ${PGVECTOR_POSTGRES_DB:-dify}
       # postgres data directory
@@ -1334,7 +1351,7 @@ services:
     volumes:
       - ./volumes/chroma:/chroma/chroma
     environment:
-      CHROMA_SERVER_AUTHN_CREDENTIALS: ${CHROMA_SERVER_AUTHN_CREDENTIALS:-difyai123456}
+      CHROMA_SERVER_AUTHN_CREDENTIALS: ${CHROMA_SERVER_AUTHN_CREDENTIALS:-TyAdmin@2026}
       CHROMA_SERVER_AUTHN_PROVIDER: ${CHROMA_SERVER_AUTHN_PROVIDER:-chromadb.auth.token_authn.TokenAuthenticationServerProvider}
       IS_PERSISTENT: ${CHROMA_IS_PERSISTENT:-TRUE}
 
@@ -1370,7 +1387,7 @@ services:
         target: /opt/oracle/oradata
       - ./startupscripts:/opt/oracle/scripts/startup
     environment:
-      ORACLE_PWD: ${ORACLE_PWD:-Dify123456}
+      ORACLE_PWD: ${ORACLE_PWD:-TyAdmin@2026}
       ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET:-AL32UTF8}
 
   # Milvus vector database services
@@ -1405,13 +1422,14 @@ services:
     image: minio/minio:RELEASE.2023-03-20T20-16-18Z
     # profiles:
     #   - milvus
+    restart: always
     environment:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
-      MINIO_SERVER_URL: http://172.24.0.5:9000
-      MINIO_API_CORS_ALLOW_ORIGIN: "http://172.24.0.5:5001,http://172.24.0.5"
+      MINIO_SERVER_URL: http://minio:9000
+    #   MINIO_API_CORS_ALLOW_ORIGIN: "http://api:5001,http://117.50.121.191"
     volumes:
-      - /data/huangx/docker/volumes/milvus/minio:/minio_data
+      - ./volumes/milvus/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
     ports:
       - 9000:9000
@@ -1434,6 +1452,8 @@ services:
     environment:
       ETCD_ENDPOINTS: ${ETCD_ENDPOINTS:-etcd:2379}
       MINIO_ADDRESS: ${MINIO_ADDRESS:-minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-TyAdmin@2026}
       common.security.authorizationEnabled: ${MILVUS_AUTHORIZATION_ENABLED:-true}
     volumes:
       - ./volumes/milvus/milvus:/var/lib/milvus
@@ -1637,34 +1657,30 @@ services:
   # ============================================================================
   # MinerU vLLM Inference Server
   # ============================================================================
-  mineru-vllm-server:
-    image: mineru-vllm:2.5.4
-    container_name: mineru-vllm-server
+  mineru-openai-server:
+    image: mineru:latest
+    container_name: mineru-openai-server
     restart: always
-    # profiles: ["vllm-server"]
+    # profiles: ["openai-server"]
     ports:
-      - "30000:30000"
+      - 30000:30000
+    entrypoint: mineru-openai-server
+    command:
+      --engine vllm
+      --host 0.0.0.0
+      --port 30000
+      #   --gpu-memory-utilization 0.9  #  建议限制在 0.5-0.7 之间，留给 mineru-api 和系统
+    # 如果想通过两张卡一起加速一个大任务：
+    #   --tensor-parallel-size 2
     environment:
       MINERU_MODEL_SOURCE: modelscope
-      MINERU_MODEL_ID: OpenDataLab/MinerU2.5-2509-1.2B
+      #       MINERU_MODEL_ID: OpenDataLab/MinerU2.5-2509-1.2B
       # 如使用私有模型或需要认证，可启用以下 token
       # HUGGING_FACE_HUB_TOKEN: "your_token"
     #   MS_HUB_TOKEN: "ms-0fcc8432-5824-416f-aa7b-6aeeab4f2410"
     volumes:
       - /data/huangx/model:/app/models/modelscope
       - /data/huangx/model/modelscope:/root/.cache/modelscope
-      # - ~/.cache/huggingface:/root/.cache/huggingface
-      # 如模型已预下载，可挂载路径：
-      # - /data/models:/app/models
-    entrypoint: mineru-vllm-server
-    command:
-      --host 0.0.0.0
-      --port 8000
-      --data-parallel-size 2
-      # 可选：控制最大 batch size / 并发等
-      # - --data-parallel-size 2
-    # If using multiple GPUs, increase throughput using vllm's multi-GPU parallel mode
-    # --gpu-memory-utilization 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
       memlock: -1
       stack: 67108864
@@ -1681,15 +1697,15 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              #   device_ids: ["0","1"]
-              count: all
+              device_ids: ["1"]
+              #   count: all
               capabilities: [gpu]
 
   # ============================================================================
   # MinerU Web API Service
   # ============================================================================
   mineru-api:
-    image: mineru-vllm:2.5.4
+    image: mineru:latest
     container_name: mineru-api
     restart: always
     # profiles: ["api"]
@@ -1697,13 +1713,13 @@ services:
       - "8000:8000"
     environment:
       MINERU_MODEL_SOURCE: local
-      VLLM_SERVER_URL: http://mineru-vllm-server:30000
+      VLLM_SERVER_URL: http://mineru-openai-server:30000
     entrypoint: mineru-api
     command:
-      - --host
-      - 0.0.0.0
-      - --port
-      - "8000"
+      --host 0.0.0.0
+      --port 8000
+    # 增加并行处理的线程数（如果版本支持）
+    #   --data-parallel-size 2
     ulimits:
       memlock: -1
       stack: 67108864
@@ -1717,158 +1733,10 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0","1"]
+              device_ids: ["0"]
+              #   count: all
               capabilities: [ gpu ]
 
-
-  # ===============================================
-  # 新增：Markdown Tool 服务 (确保 context 路径正确)
-  # # ===============================================
-  # markdown-tool:
-  #   # # 指向 Tool 文件夹和 Dockerfile
-  #   # build:
-  #   #   context: ./dify-markdown-tool
-  #   #   dockerfile: Dockerfile.tool
-  #   # container_name: dify_markdown_tool
-  #   # # 确保它连接到 Dify 的内部网络。如果 Dify 使用自定义网络名，请在此处替换
-  #   # networks:
-  #   #   - default # 或者 dify 的网络名
-  #   # # 容器内端口 8080，无需映射到宿主机，因为 Dify API 直接访问它
-  #   # restart: always
-  #   build:
-  #     context: ./plugins/string-to-md
-  #     dockerfile: Dockerfile.tool
-  #   container_name: dify_markdown_tool
-  #   networks:
-  #     - default
-  #   restart: always
-  #   volumes:
-  #     - ./plugins/string-to-md:/app
-  #   environment:
-  #     - PLUGIN_NAME=string_to_md
-
-  # ============================================================================
-  # MinerU Gradio WebUI
-  # ============================================================================
-#   mineru-gradio:
-#     image: mineru-vllm:2.5.4
-#     container_name: mineru-gradio
-#     restart: always
-#     profiles: ["gradio"]
-#     ports:
-#       - "7860:7860"
-#     environment:
-#       MINERU_MODEL_SOURCE: local
-#       VLLM_SERVER_URL: http://mineru-vllm-server:30000
-#     entrypoint: mineru-gradio
-#     command:
-#       --server-name 0.0.0.0
-#       --server-port 7860
-#       --enable-vllm-engine true
-#       # 可选：禁用内置 API，限制转换页数等
-#       # --enable-api false
-#       # --max-convert-pages 20
-#     ulimits:
-#       memlock: -1
-#       stack: 67108864
-#     ipc: host
-#     depends_on:
-#       mineru-vllm-server:
-#         condition: service_healthy
-
-
-# ### 老版本 2.1.10
-#   mineru-sglang-server:
-#     image: mineru-sglang:latest
-#     container_name: mineru-sglang-server
-#     restart: always
-# #    profiles: ["sglang-server"]
-#     ports:
-#       - 30000:30000
-#     environment:
-#       MINERU_MODEL_SOURCE: local
-#     entrypoint: mineru-sglang-server
-#     command:
-#       --host 0.0.0.0
-#       --port 30000
-#       --mem-fraction-static 0.6
-#       --tp-size 1
-#       --dp-size 1
-#       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
-#       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-#       # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
-#     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
-#     ulimits:
-#       memlock: -1
-#       stack: 67108864
-#     ipc: host
-#     shm_size: 32g
-#     gpus: all
-#     healthcheck:
-#       test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
-
-
-#     # ulimits:
-#     #   memlock: -1
-#     #   stack: 67108864
-#     # ipc: host
-#     # healthcheck:
-#     #   test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
-#     # networks:
-#     #   - default
-#     # deploy:
-#     #   resources:
-#     #     reservations:
-#     #       devices:
-#     #         - driver: nvidia
-#     #           device_ids: ["0", "1"]
-#     #           capabilities: [gpu]
-#     # deploy:                              # GPU 资源配置
-#     #   resources:
-#     #     reservations:
-#     #       devices:
-#     #         - driver: nvidia
-#     #           count: all                 # 使用所有 GPU
-#     #           capabilities: [gpu]
-
-#   mineru-api:
-#     image: mineru-sglang:latest
-#     container_name: mineru-api
-#     restart: always
-# #    profiles: ["api"]
-#     ports:
-#       - 8000:8000
-#     environment:
-#       MINERU_MODEL_SOURCE: local
-#     entrypoint: mineru-api
-#     command:
-#       --host 0.0.0.0
-#       --port 8000
-#       --mem-fraction-static 0.4
-#       --tp-size 2
-#       --dp-size 2
-#       # parameters for sglang-engine
-#       # --enable-torch-compile  # You can also enable torch.compile to accelerate inference speed by approximately 15%
-#       # --dp-size 2  # If using multiple GPUs, increase throughput using sglang's multi-GPU parallel mode
-#       # --tp-size 2  # If you have more than one GPU, you can expand available VRAM using tensor parallelism (TP) mode.
-#     # --mem-fraction-static 0.5  # If running on a single GPU and encountering VRAM shortage, reduce the KV cache size by this parameter, if VRAM issues persist, try lowering it further to `0.4` or below.
-#     ulimits:
-#       memlock: -1
-#       stack: 67108864
-#     ipc: host
-#     networks:
-#       - default
-#     deploy:
-#       resources:
-#         reservations:
-#           devices:
-#             - driver: nvidia
-#               device_ids: ["0", "1"]
-#               capabilities: [gpu]
-#     # deploy:                              # API 不需要 GPU
-#     #   resources:
-#     #     reservations:
-#     #       devices: []
 
 # ================================
 # 网络配置 (Network Configuration)
