@@ -505,7 +505,7 @@ x-shared-env: &shared-api-worker-env
   ETCD_QUOTA_BACKEND_BYTES: ${ETCD_QUOTA_BACKEND_BYTES:-4294967296}
   ETCD_SNAPSHOT_COUNT: ${ETCD_SNAPSHOT_COUNT:-50000}
   MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
-  MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+  MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-TyAdmin@2026}
   ETCD_ENDPOINTS: ${ETCD_ENDPOINTS:-etcd:2379}
   MINIO_ADDRESS: ${MINIO_ADDRESS:-minio:9000}
   MILVUS_AUTHORIZATION_ENABLED: ${MILVUS_AUTHORIZATION_ENABLED:-true}
@@ -884,13 +884,15 @@ services:
 
   # The mysql database.
   db_mysql:
-    image: mysql:8.0
-    profiles:
-      - mysql
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/wechatpadpro/mysql:8.0
+    # profiles:
+    #   - mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-TyAdmin@2026}
       MYSQL_DATABASE: ${DB_DATABASE:-dify}
+    ports:
+      - '3306:3306'
     command: >
       --max_connections=1000
       --innodb_buffer_pool_size=${MYSQL_INNODB_BUFFER_POOL_SIZE:-512M}
@@ -929,6 +931,8 @@ services:
           "CMD-SHELL",
           "redis-cli -a ${REDIS_PASSWORD:-TyAdmin@2026} ping | grep -q PONG",
         ]
+    networks:
+      - default
 
   # The DifySandbox
   sandbox:
@@ -1563,15 +1567,15 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
     container_name: elasticsearch
-    profiles:
-      - elasticsearch
-      - elasticsearch-ja
+    # profiles:
+    #   - elasticsearch
+    #   - elasticsearch-ja
     restart: always
     volumes:
       - ./elasticsearch/docker-entrypoint.sh:/docker-entrypoint-mount.sh
       - ai_flow_es_data:/usr/share/elasticsearch/data
     environment:
-      ELASTIC_PASSWORD: ${ELASTICSEARCH_PASSWORD:-elastic}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-TyAdmin@2026}
       VECTOR_STORE: ${VECTOR_STORE:-}
       cluster.name: dify-es-cluster
       node.name: dify-es0
