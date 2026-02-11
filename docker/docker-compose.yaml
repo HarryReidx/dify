@@ -31,7 +31,7 @@ x-shared-env: &shared-api-worker-env
   CHECK_UPDATE_URL: ${CHECK_UPDATE_URL:-https://updates.dify.ai}
   OPENAI_API_BASE: ${OPENAI_API_BASE:-https://api.openai.com/v1}
   MIGRATION_ENABLED: ${MIGRATION_ENABLED:-true}
-  FILES_ACCESS_TIMEOUT: ${FILES_ACCESS_TIMEOUT:-300}
+  FILES_ACCESS_TIMEOUT: ${FILES_ACCESS_TIMEOUT:-3000}
   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
   REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-30}
   APP_DEFAULT_ACTIVE_REQUESTS: ${APP_DEFAULT_ACTIVE_REQUESTS:-0}
@@ -505,7 +505,7 @@ x-shared-env: &shared-api-worker-env
   ETCD_QUOTA_BACKEND_BYTES: ${ETCD_QUOTA_BACKEND_BYTES:-4294967296}
   ETCD_SNAPSHOT_COUNT: ${ETCD_SNAPSHOT_COUNT:-50000}
   MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
-  MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-TyAdmin@2026}
+  MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
   ETCD_ENDPOINTS: ${ETCD_ENDPOINTS:-etcd:2379}
   MINIO_ADDRESS: ${MINIO_ADDRESS:-minio:9000}
   MILVUS_AUTHORIZATION_ENABLED: ${MILVUS_AUTHORIZATION_ENABLED:-true}
@@ -697,34 +697,36 @@ services:
       PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
-    depends_on:
-      init_permissions:
-        condition: service_completed_successfully
-      db_postgres:
-        condition: service_healthy
-        required: false
-      db_mysql:
-        condition: service_healthy
-        required: false
-      oceanbase:
-        condition: service_healthy
-        required: false
-      seekdb:
-        condition: service_healthy
-        required: false
-      redis:
-        condition: service_started
+    # depends_on:
+    #   init_permissions:
+    #     condition: service_completed_successfully
+    #   db_postgres:
+    #     condition: service_healthy
+    #     required: false
+    #   db_mysql:
+    #     condition: service_healthy
+    #     required: false
+    #   oceanbase:
+    #     condition: service_healthy
+    #     required: false
+    #   seekdb:
+    #     condition: service_healthy
+    #     required: false
+    #   redis:
+    #     condition: service_started
     ports:
       - "5001:5001"
     pids_limit: -1
     security_opt:
       - seccomp=unconfined
-    # volumes:
-    #   # Mount the storage directory to the container, for storing user files.
-    #   - ./volumes/app/storage:/app/api/storage
+    volumes:
+      # Mount the storage directory to the container, for storing user files.
+      - ./volumes/app/storage:/app/api/storage
     networks:
       - ssrf_proxy_network
       - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # 核心配置：将域名映射到宿主机网关
 
   # worker service
   # The Celery worker for processing all queues (dataset, workflow, mail, etc.)
@@ -745,23 +747,23 @@ services:
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
-    depends_on:
-      init_permissions:
-        condition: service_completed_successfully
-      db_postgres:
-        condition: service_healthy
-        required: false
-      db_mysql:
-        condition: service_healthy
-        required: false
-      oceanbase:
-        condition: service_healthy
-        required: false
-      seekdb:
-        condition: service_healthy
-        required: false
-      redis:
-        condition: service_started
+    # depends_on:
+    #   init_permissions:
+    #     condition: service_completed_successfully
+    #   db_postgres:
+    #     condition: service_healthy
+    #     required: false
+    #   db_mysql:
+    #     condition: service_healthy
+    #     required: false
+    #   oceanbase:
+    #     condition: service_healthy
+    #     required: false
+    #   seekdb:
+    #     condition: service_healthy
+    #     required: false
+    #   redis:
+    #     condition: service_started
     pids_limit: -1
     security_opt:
       - seccomp=unconfined
@@ -771,6 +773,8 @@ services:
     networks:
       - ssrf_proxy_network
       - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # 核心配置：将域名映射到宿主机网关
 
   # worker_beat service
   # Celery beat for scheduling periodic tasks.
@@ -785,23 +789,23 @@ services:
       <<: *shared-api-worker-env
       # Startup mode, 'worker_beat' starts the Celery beat for scheduling periodic tasks.
       MODE: beat
-    depends_on:
-      init_permissions:
-        condition: service_completed_successfully
-      db_postgres:
-        condition: service_healthy
-        required: false
-      db_mysql:
-        condition: service_healthy
-        required: false
-      oceanbase:
-        condition: service_healthy
-        required: false
-      seekdb:
-        condition: service_healthy
-        required: false
-      redis:
-        condition: service_started
+    # depends_on:
+    #   init_permissions:
+    #     condition: service_completed_successfully
+    #   db_postgres:
+    #     condition: service_healthy
+    #     required: false
+    #   db_mysql:
+    #     condition: service_healthy
+    #     required: false
+    #   oceanbase:
+    #     condition: service_healthy
+    #     required: false
+    #   seekdb:
+    #     condition: service_healthy
+    #     required: false
+    #   redis:
+    #     condition: service_started
     pids_limit: -1
     security_opt:
       - seccomp=unconfined
@@ -931,8 +935,8 @@ services:
           "CMD-SHELL",
           "redis-cli -a ${REDIS_PASSWORD:-TyAdmin@2026} ping | grep -q PONG",
         ]
-    networks:
-      - default
+    ports:
+      - '6379:6379'
 
   # The DifySandbox
   sandbox:
@@ -1031,6 +1035,8 @@ services:
       seekdb:
         condition: service_healthy
         required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # 核心配置：将域名映射到宿主机网关
 
   # ssrf_proxy server
   # for more information, please refer to
@@ -1057,6 +1063,8 @@ services:
     networks:
       - ssrf_proxy_network
       - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # 核心配置：将域名映射到宿主机网关
 
   # Certbot service
   # use `docker-compose --profile certbot up` to start the certbot service.
@@ -1577,26 +1585,32 @@ services:
     environment:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-TyAdmin@2026}
       VECTOR_STORE: ${VECTOR_STORE:-}
-      cluster.name: dify-es-cluster
+      cluster.name: elasticsearch
       node.name: dify-es0
       discovery.type: single-node
       xpack.license.self_generated.type: basic
       xpack.security.enabled: "true"
       xpack.security.enrollment.enabled: "false"
       xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+      cluster.routing.allocation.disk.watermark.low: 5gb
+      cluster.routing.allocation.disk.watermark.high: 3gb
+      cluster.routing.allocation.disk.watermark.flood_stage: 2gb
+      bootstrap.memory_lock: "false"
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - ${ELASTICSEARCH_PORT:-9200}:9200
-    deploy:
-      resources:
-        limits:
-          memory: 2g
     entrypoint: ["sh", "-c", "sh /docker-entrypoint-mount.sh"]
     healthcheck:
-      test:
-        ["CMD", "curl", "-s", "http://localhost:9200/_cluster/health?pretty"]
-      interval: 30s
+      test: ["CMD-SHELL", "curl http://localhost:9200"]
+      interval: 10s
       timeout: 10s
-      retries: 50
+      retries: 120
+
 
   # https://www.elastic.co/guide/en/kibana/current/docker.html
   # https://www.elastic.co/guide/en/kibana/current/settings.html
@@ -1658,89 +1672,302 @@ services:
     security_opt:
       - seccomp=unconfined
 
-  # ============================================================================
-  # MinerU vLLM Inference Server
-  # ============================================================================
-  mineru-openai-server:
-    image: mineru:latest
-    container_name: mineru-openai-server
-    restart: always
-    # profiles: ["openai-server"]
+  # 视觉模型 CUDA_VISIBLE_DEVICES=0 vllm serve/data/huangx/model/OpenBMB/MiniCPM-V-4_5 --port 8102 --max-model-len 16384
+  #   minicpm-v:
+  #     image: vllm/vllm-openai:latest
+  #     container_name: minicpm-v-4_5
+  #     runtime: nvidia
+  #     environment:
+  #       - NVIDIA_VISIBLE_DEVICES=all
+  #     volumes:
+  #       - /data/huangx/model:/models
+  #     ports:
+  #       - "8000:8000"
+  #     ipc: host
+  #     command: >
+  #       --model /models/OpenBMB/MiniCPM-V-4_5
+  #       --served-model-name MiniCPM-V-4_5
+  #       --trust-remote-code
+  #       --max-model-len 8192
+  #       --gpu-memory-utilization 0.9
+  #   # ============================================================================
+  #   # MinerU vLLM Inference Server
+  #   # ============================================================================
+  #   mineru-openai-server:
+  #     image: mineru:latest
+  #     container_name: mineru-openai-server
+  #     restart: always
+  #     # profiles: ["openai-server"]
+  #     ports:
+  #       - 30000:30000
+  #     entrypoint: mineru-openai-server
+  #     command:
+  #       --engine vllm
+  #       --host 0.0.0.0
+  #       --port 30000
+  #     #   --gpu-memory-utilization 0.9  #  建议限制在 0.5-0.7 之间，留给 mineru-api 和系统
+  #       # 如果想通过两张卡一起加速一个大任务：
+  #     #   --tensor-parallel-size 2
+  #     environment:
+  #       MINERU_MODEL_SOURCE: modelscope
+  # #       MINERU_MODEL_ID: OpenDataLab/MinerU2.5-2509-1.2B
+  #       # 如使用私有模型或需要认证，可启用以下 token
+  #       # HUGGING_FACE_HUB_TOKEN: "your_token"
+  #     #   MS_HUB_TOKEN: "ms-0fcc8432-5824-416f-aa7b-6aeeab4f2410"
+  #     volumes:
+  #       - /data/huangx/model:/app/models/modelscope
+  #       - /data/huangx/model/modelscope:/root/.cache/modelscope
+  #     ulimits:
+  #       memlock: -1
+  #       stack: 67108864
+  #     ipc: host
+  #     healthcheck:
+  #       test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
+  #       interval: 30s
+  #       timeout: 10s
+  #       retries: 3
+  #       start_period: 30s
+  #     shm_size: '16gb'  # 设置为显存大小的一半或更多，TITAN RTX 24G建议给16G以上
+  #     deploy:
+  #       resources:
+  #         reservations:
+  #           devices:
+  #             - driver: nvidia
+  #             #   device_ids: ["1"]
+  #               count: all
+  #               capabilities: [gpu]
+
+  #   # ============================================================================
+  #   # MinerU Web API Service
+  #   # ============================================================================
+  #   mineru-api:
+  #     image: mineru:latest
+  #     container_name: mineru-api
+  #     restart: always
+  #     # profiles: ["api"]
+  #     ports:
+  #       - "8000:8000"
+  #     environment:
+  #       MINERU_MODEL_SOURCE: local
+  #       VLLM_SERVER_URL: http://mineru-openai-server:30000
+  #     entrypoint: mineru-api
+  #     command:
+  #       --host 0.0.0.0
+  #       --port 8000
+  #       # 增加并行处理的线程数（如果版本支持）
+  #     #   --data-parallel-size 2
+  #     ulimits:
+  #       memlock: -1
+  #       stack: 67108864
+  #     ipc: host
+  #     networks:
+  #       - default
+  #     volumes:
+  #       - ./volumes/mineru-output:/vllm-workspace/output
+  #     deploy:
+  #       resources:
+  #         reservations:
+  #           devices:
+  #             - driver: nvidia
+  #             #   device_ids: ["1"]
+  #               count: all
+  #               capabilities: [ gpu ]
+
+  ragflow-gpu:
+    # depends_on:
+    #   db_mysql:
+    #     condition: service_healthy
+    # profiles:
+    #   - gpu
+    image: ${RAGFLOW_IMAGE}
+    # Example configuration to set up an MCP server:
+    # command:
+    #   - --enable-mcpserver
+    #   - --mcp-host=0.0.0.0
+    #   - --mcp-port=9382
+    #   - --mcp-base-url=http://127.0.0.1:9380
+    #   - --mcp-script-path=/ragflow/mcp/server/server.py
+    #   - --mcp-mode=self-host
+    #   - --mcp-host-api-key=ragflow-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    # Optional transport flags for MCP (customize if needed).
+    # Host mode need to combined with --no-transport-streamable-http-enabled flag, namely, host+streamable-http is not supported yet.
+    # The following are enabled by default unless explicitly disabled with --no-<flag>.
+    #   - --no-transport-sse-enabled # Disable legacy SSE endpoints (/sse and /messages/)
+    #   - --no-transport-streamable-http-enabled #  Disable Streamable HTTP transport (/mcp endpoint)
+    #   - --no-json-response # Disable JSON response mode in Streamable HTTP transport (instead of SSE over HTTP)
+
+    # Example configration to start Admin server:
+    # command:
+    #   - --enable-adminserver
     ports:
-      - 30000:30000
-    entrypoint: mineru-openai-server
-    command:
-      --engine vllm
-      --host 0.0.0.0
-      --port 30000
-      #   --gpu-memory-utilization 0.9  #  建议限制在 0.5-0.7 之间，留给 mineru-api 和系统
-    # 如果想通过两张卡一起加速一个大任务：
-    #   --tensor-parallel-size 2
-    environment:
-      MINERU_MODEL_SOURCE: modelscope
-      #       MINERU_MODEL_ID: OpenDataLab/MinerU2.5-2509-1.2B
-      # 如使用私有模型或需要认证，可启用以下 token
-      # HUGGING_FACE_HUB_TOKEN: "your_token"
-    #   MS_HUB_TOKEN: "ms-0fcc8432-5824-416f-aa7b-6aeeab4f2410"
+      - ${SVR_WEB_HTTP_PORT}:80
+      - ${SVR_WEB_HTTPS_PORT}:443
+      - ${SVR_HTTP_PORT}:9380
+      - ${ADMIN_SVR_HTTP_PORT}:9381
+      - ${SVR_MCP_PORT}:9382 # entry for MCP (host_port:docker_port). The docker_port must match the value you set for `mcp-port` above.
     volumes:
-      - /data/huangx/model:/app/models/modelscope
-      - /data/huangx/model/modelscope:/root/.cache/modelscope
-    ulimits:
-      memlock: -1
-      stack: 67108864
-    ipc: host
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:30000/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    shm_size: '16gb'  # 设置为显存大小的一半或更多，TITAN RTX 24G建议给16G以上
+      #   - ./ragflow-logs:/ragflow/logs
+      - ./ragflow/nginx/ragflow.conf:/etc/nginx/conf.d/ragflow.conf
+      - ./ragflow/nginx/proxy.conf:/etc/nginx/proxy.conf
+      - ./ragflow/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./ragflow/service_conf.yaml.template:/ragflow/conf/service_conf.yaml.template
+      - ./ragflow/entrypoint.sh:/ragflow/entrypoint.sh
+      - ./ragflow/entrypoint.sh:/ragflow/entrypoint.sh
+      - ./ragflow/.venv:/ragflow/.venv
+    #   - ./ragflow/pip-cache:/root/.cache/pip
+    #   - 。/ragflow/hf-cache:/root/.cache/huggingface
+    env_file: .env
+    # networks:
+    #   - ragflow
+    restart: on-failure
+    # https://docs.docker.com/engine/daemon/prometheus/#create-a-prometheus-configuration
+    # If you use Docker Desktop, the --add-host flag is optional. This flag ensures that the host's internal IP is exposed to the Prometheus container.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["1"]
-              #   count: all
+              count: all
               capabilities: [gpu]
 
-  # ============================================================================
-  # MinerU Web API Service
-  # ============================================================================
-  mineru-api:
-    image: mineru:latest
-    container_name: mineru-api
-    restart: always
-    # profiles: ["api"]
-    ports:
-      - "8000:8000"
-    environment:
-      MINERU_MODEL_SOURCE: local
-      VLLM_SERVER_URL: http://mineru-openai-server:30000
-    entrypoint: mineru-api
-    command:
-      --host 0.0.0.0
-      --port 8000
-    # 增加并行处理的线程数（如果版本支持）
-    #   --data-parallel-size 2
-    ulimits:
-      memlock: -1
-      stack: 67108864
-    ipc: host
-    networks:
-      - default
-    volumes:
-      - ./volumes/mineru-output:/vllm-workspace/output
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              device_ids: ["0"]
-              #   count: all
-              capabilities: [ gpu ]
 
+
+    # # ============================================================================
+    #   # RAGFlow - 基于深度文档理解的 RAG 引擎
+    #   # 融合说明：
+    #   # 1. 依赖 db_mysql (Dify 提供的 MySQL 8.0)
+    #   # 2. 依赖 redis 和 minio
+    #   # 3. 建议在 MySQL 中预先手动创建 'ragflow' 数据库
+    #   # ============================================================================
+
+    #   # ============================================================================
+    #   # RAGFlow 专属组件：Sandbox (代码执行沙箱)
+    #   # 虽然 Dify 也有沙箱，但 RAGFlow 强依赖其专属的 executor-manager
+    #   # ============================================================================
+    #   sandbox-executor-manager:
+    #     # profiles:
+    #     #   - gpu
+    #     #   - cpu
+    #     #   - sandbox
+    #     image: ${SANDBOX_EXECUTOR_MANAGER_IMAGE:-swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/infiniflow/sandbox-executor-manager:latest}
+    #     container_name: ragflow-sandbox
+    #     privileged: true
+    #     ports:
+    #       - ${SANDBOX_EXECUTOR_MANAGER_PORT:-9385}:9385
+    #     env_file: .env
+    #     volumes:
+    #       - /var/run/docker.sock:/var/run/docker.sock
+    #     networks:
+    #       - default
+    #     security_opt:
+    #       - no-new-privileges:true
+    #     environment:
+    #       - SANDBOX_EXECUTOR_MANAGER_POOL_SIZE=${SANDBOX_EXECUTOR_MANAGER_POOL_SIZE:-3}
+    #       - SANDBOX_BASE_PYTHON_IMAGE=${SANDBOX_BASE_PYTHON_IMAGE:-infiniflow/sandbox-base-python:latest}
+    #       - SANDBOX_BASE_NODEJS_IMAGE=${SANDBOX_BASE_NODEJS_IMAGE:-infiniflow/sandbox-base-nodejs:latest}
+    #     restart: unless-stopped
+
+    #   # ============================================================================
+    #   # RAGFlow 主服务 (GPU/CPU 逻辑合并)
+    #   # ============================================================================
+    #   ragflow:
+    #     image: ${RAGFLOW_IMAGE}
+    #     container_name: ragflow-server
+    #     # 核心依赖：必须等 Dify 的基础组件全部健康
+    #     # depends_on:
+    #     #   db_mysql:
+    #     #     condition: service_healthy
+    #     #   elasticsearch:
+    #     #     condition: service_healthy
+    #     #   redis:
+    #     #     condition: service_healthy
+    #     #   minio:
+    #     #     condition: service_healthy
+    #     # profiles:
+    #     #   - gpu
+    #     #   - cpu
+    #     ports:
+    #       - ${SVR_WEB_HTTP_PORT:-81}:80
+    #     #   - ${SVR_WEB_HTTPS_PORT:-444}:443
+    #       - ${SVR_HTTP_PORT:-9380}:9380
+    #       - ${ADMIN_SVR_HTTP_PORT:-9381}:9381
+    #       - ${SVR_MCP_PORT:-9382}:9382
+    #     command:
+    #       - --enable-adminserver
+    #     volumes:
+    #       - ./ragflow-logs:/ragflow/logs
+    #       - ./ragflow/nginx/ragflow.conf:/etc/nginx/conf.d/ragflow.conf
+    #       - ./ragflow/nginx/proxy.conf:/etc/nginx/proxy.conf
+    #       - ./ragflow/nginx/nginx.conf:/etc/nginx/nginx.conf
+    #       - ./ragflow/service_conf.yaml.template:/ragflow/conf/service_conf.yaml.template
+    #       - ./ragflow/entrypoint.sh:/ragflow/entrypoint.sh
+    #     env_file: .env
+    #     environment:
+    #       - DB_TYPE=mysql
+    #       - DB_HOST=db_mysql # 指向 Dify MySQL
+    #       - MYSQL_DBNAME=${MYSQL_DBNAME:-rag_flow}
+    #       - ES_HOST=elasticsearch # 指向 Dify ES
+    #       - USE_MINERU=true
+    #       - MINERU_API_URL=http://mineru-api:8000  # 核心配置：指向你的 API 容器
+    #       - MINERU_BACKEND=pipeline
+    #       # 如果需要连接你已经部署的 mineru-api，可以在 RAGFlow 界面中配置
+    #     networks:
+    #       - default
+    #       - ssrf_proxy_network # 允许 Dify 调用 RAGFlow
+    #     restart: unless-stopped
+    #     extra_hosts:
+    #       - "host.docker.internal:host-gateway"
+    #     # GPU 资源分配（仅在 profile 为 gpu 时生效）
+    #     deploy:
+    #       resources:
+    #         reservations:
+    #           devices:
+    #             - driver: nvidia
+    #               count: all
+    #               capabilities: [gpu]
+
+    # # ============================================================================
+    #   # RAGFlow 任务执行器 (处理解析/索引任务)
+    #   # ============================================================================
+    #   ragflow-executor:
+    #     image: ${RAGFLOW_IMAGE}
+    #     container_name: ragflow-executor
+    #     # depends_on:
+    #     #   db_mysql:
+    #     #     condition: service_healthy
+    #     #   elasticsearch:
+    #     #     condition: service_healthy
+    #     # 根据你的需要开启 profile
+    #     # profiles:
+    #     #   - gpu
+    #     # 建议使用 sh -c 调用以确保环境变量被正确解析 后面的两个参数 1 3 分别代表 Consumer ID 和 并行任务数。
+    #     # entrypoint: ["/bin/sh", "-c", "/ragflow/entrypoint_task_executor.sh 1 8"]
+    #     entrypoint: "./entrypoint.sh --disable-webserver --workers=4"
+
+
+#     env_file: .env
+#     environment:
+#       - DB_TYPE=mysql
+#       - DB_HOST=db_mysql
+#       - MYSQL_DBNAME=${MYSQL_DBNAME:-rag_flow}
+#     #   - USE_MINERU=true
+#     #   - MINERU_API_URL=http://mineru-api:8000  # 核心配置：指向你的 API 容器
+#     #   - MINERU_BACKEND=pipeline
+#     volumes:
+#       - ./ragflow-logs:/ragflow/logs
+#       - ./ragflow/nginx/ragflow.conf:/etc/nginx/conf.d/ragflow.conf
+#     networks:
+#       - default
+#     restart: unless-stopped
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               count: all
+#               capabilities: [gpu]
 
 # ================================
 # 网络配置 (Network Configuration)
